@@ -1,2 +1,2 @@
-# tym
-TYM - Track Your Money
+# YTM
+Your Money Tracker

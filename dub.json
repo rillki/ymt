@@ -1,0 +1,14 @@
+{
+	"authors": [
+		"rillki"
+	],
+	"copyright": "Copyright © 2022, rillki",
+	"targetPath": "bin",
+	"dependencies": {
+		"d2sqlite3": "~>1.0.0"
+	},
+    "lflags": ["-L/usr/local/Cellar/sqlite/3.38.0/lib/"],
+	"description": "YMT - Your Money Tracker",
+	"license": "MIT",
+	"name": "ymt"
+}

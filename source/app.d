@@ -9,7 +9,7 @@ import ymtadd;
 
 void main(string[] args) {
     if(args.length < 2) {
-        writefln("#ymt: no commands provided! See \'ymt -h\' for more info.");
+        writefln("#ymt: no commands provided! See \'ymt help\' for more info.");
         return;
     }
 
@@ -31,7 +31,7 @@ void main(string[] args) {
             dbClean();
             break;
         case "add":
-            parseArgs(args[2..$]);
+            parseArgs(args);
             break;
         case "help":
             writefln("\nymt version 0.1 - Your Money Tracker.");
@@ -50,20 +50,27 @@ void main(string[] args) {
 }
 
 void parseArgs(string[] args) {
-    // commands
-    //...
+    if(args.length < 3) {
+        writefln("#ymt add: no commands provided! See \'ymt add -h\' for more info.");
+        return;
+    }
 
-    /+
+    // commands
+    string 
+        type = null,
+        name = null,
+        list = null;
+    float receipt = 0;
+
     // parsing command line arguments
     GetoptResult argInfo;
     try {
         argInfo = getopt(
             args,
-            "init|i", "initialize a database", &bInit,
-            "remove|r", "remove a database", &bRemove,
-            "switch|s", "switch from one database to another", &bSwitch,
-            "clean|c", "delete ymt directory with all databases and configs", &bClean,
-            "add|a", "add a data entry to a database", &bAdd
+            "type|t", "add category", &type,
+            "name|n", "add category member", &name,
+            "list|l", "list data: types/names", &list,
+            "receipt|r", "add receipt", &receipt,
         );
     } catch(Exception e) {
         writefln("\n#ymt: error! %s\n", e.msg);
@@ -72,15 +79,16 @@ void parseArgs(string[] args) {
 
     // print ymt usage
     if(argInfo.helpWanted) {
-        defaultGetoptPrinter("\nymt version v0.1 -- Your Money Tracker.", argInfo.options);
-        writefln("\nEXAMPLE:\n\t%s\n\t%s\n\t%s\n\t%s\n\n", 
-            "ymt --init dbname.db", 
-            "ymt --remove dbname.db",
-            "ymt --switch new.db",
-            "ymt --clean"
-        );
+        defaultGetoptPrinter("\nymt add -- add your data.", argInfo.options);
+        writefln("\nEXAMPLE: ymt add --type=Dairy");
+        writefln("         ymt add --name Milk --type 1");
+        writefln("         ymt add --receipt 523.2 --type 1 --name 1");
+        writefln("         ymt list types");
+        writefln("         ymt list names\n");
         return;
-    }+/
+    }
+
+    writefln("%s\n%s\n%s\n%s", type, name, list, receipt);
 }
 
 

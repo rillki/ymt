@@ -1,6 +1,6 @@
+// Built with DMD v2.100.0
 module app;
 
-// Built with DMD v2.100.0
 import std.stdio: writefln;
 import std.getopt: getopt, GetoptResult, defaultGetoptPrinter;
 
@@ -32,6 +32,16 @@ void main(string[] args) {
             break;
         case "add":
             parseArgs(args[2..$]);
+            break;
+        case "help":
+            writefln("\nymt version 0.1 - Your Money Tracker.");
+            writefln("  init <dbname>  initializes a new database");
+            writefln("remove <dbname>  removes an existing database");
+            writefln("switch <dbname>  switches to the specified database");
+            writefln("   add [OPTIONS] use -h to read the usage manual on adding data");
+            writefln(" clean           delete all data");
+            writefln("  help           this help manual\n");
+            writefln("EXAMPLE: ymt init crow.db\n");
             break;
         default:
             writefln("#ymt: Unrecognized option %s!", args[1]);

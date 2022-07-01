@@ -5,8 +5,7 @@ import std.file: exists, mkdir, remove, rmdirRecurse;
 import std.path: buildPath;
 import std.stdio: File, writefln;
 
-immutable basedir = ".ymt";
-immutable configFile = "ymt.config";
+import ymtcommon;
 
 /// Creates a .ymt folder, db and a config file
 void dbInit(const string dbname) {

@@ -2,6 +2,7 @@
 module app;
 
 import std.stdio: writefln;
+import std.conv: to;
 import std.getopt: getopt, GetoptResult, defaultGetoptPrinter;
 
 import ymtinit;
@@ -60,6 +61,9 @@ void parseArgs(string[] args) {
         type = null,
         name = null,
         list = null;
+    uint 
+        typeID = 0, 
+        nameID = 0;
     float receipt = 0;
 
     // parsing command line arguments
@@ -67,9 +71,11 @@ void parseArgs(string[] args) {
     try {
         argInfo = getopt(
             args,
-            "type|t", "add category", &type,
+            "type|t", "add category name", &type,
             "name|n", "add category member", &name,
-            "list|l", "list data: types/names", &list,
+            "typeID|x", "category ID", &typeID,
+            "nameID|z", "category member ID", &nameID,
+            "list|l", "list data: [types, names, receipts]", &list,
             "receipt|r", "add receipt", &receipt,
         );
     } catch(Exception e) {
@@ -81,14 +87,22 @@ void parseArgs(string[] args) {
     if(argInfo.helpWanted) {
         defaultGetoptPrinter("\nymt add -- add your data.", argInfo.options);
         writefln("\nEXAMPLE: ymt add --type=Dairy");
-        writefln("         ymt add --name Milk --type 1");
-        writefln("         ymt add --receipt 523.2 --type 1 --name 1");
+        writefln("         ymt add --name Milk --typeID 1");
+        writefln("         ymt add --receipt 523.2 --typeID 1 --nameID 1");
         writefln("         ymt list types");
         writefln("         ymt list names\n");
         return;
     }
 
-    writefln("%s\n%s\n%s\n%s", type, name, list, receipt);
+    if(list !is null) {
+        dbList(list);
+    } else if(type !is null) {
+        dbAddType(type);
+    } else if(name !is null) {
+        dbAddName(name, typeID);
+    } else {
+        dbAddReceipt(receipt, nameID, typeID);
+    }
 }
 
 

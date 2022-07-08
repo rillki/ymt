@@ -3,10 +3,13 @@ module app;
 
 import std.stdio: writefln;
 import std.conv: to;
+import std.string: format;
 import std.getopt: getopt, GetoptResult, defaultGetoptPrinter;
 
+import ymtcommon;
 import ymtinit;
 import ymtadd;
+import ymtlist;
 
 void main(string[] args) {
     if(args.length < 2) {
@@ -28,18 +31,26 @@ void main(string[] args) {
         case "switch":
             dbSwitch(dbname);
             break;
+        case "add":
+            parseAdd(args);
+            break;
+        case "list":
+            parseList(args);
+            break;
+        case "query":
+            // query
+            break;
         case "clean":
             dbClean();
             break;
-        case "add":
-            parseArgs(args);
-            break;
         case "help":
-            writefln("\nymt version 0.1 - Your Money Tracker.");
+            writefln("\nymt version %s - Your Money Tracker.", YMT_VERSION);
             writefln("  init <dbname>  initializes a new database");
             writefln("remove <dbname>  removes an existing database");
             writefln("switch <dbname>  switches to the specified database");
             writefln("   add [OPTIONS] use -h to read the usage manual on adding data");
+            writefln("  list [OPTIONS] use -h to read the usage manual on listing data");
+            writefln(" query [OPTIONS] use -h to read the usage manual on querying data");
             writefln(" clean           delete all data");
             writefln("  help           this help manual\n");
             writefln("EXAMPLE: ymt init crow.db\n");
@@ -50,17 +61,16 @@ void main(string[] args) {
     }
 }
 
-void parseArgs(string[] args) {
+void parseAdd(string[] args) {
     if(args.length < 3) {
-        writefln("#ymt add: no commands provided! See \'ymt add -h\' for more info.");
+        writefln("#ymt add: no option is specified! See \'ymt add -h\' for more info.");
         return;
     }
 
     // commands
     string 
         type = null,
-        name = null,
-        list = null;
+        name = null;
     uint 
         typeID = 0, 
         nameID = 0;
@@ -75,28 +85,23 @@ void parseArgs(string[] args) {
             "name|n", "add category member", &name,
             "typeID|x", "category ID", &typeID,
             "nameID|z", "category member ID", &nameID,
-            "list|l", "list data: [types, names, receipts]", &list,
             "receipt|r", "add receipt", &receipt,
         );
     } catch(Exception e) {
-        writefln("\n#ymt: error! %s\n", e.msg);
+        writefln("\n#ymt add: error! %s\n", e.msg);
         return;
     }
 
     // print ymt usage
     if(argInfo.helpWanted) {
-        defaultGetoptPrinter("\nymt add -- add your data.", argInfo.options);
+        defaultGetoptPrinter("\nymt add version %s -- add your data.".format(YMT_VERSION), argInfo.options);
         writefln("\nEXAMPLE: ymt add --type=Dairy");
         writefln("         ymt add --name Milk --typeID 1");
-        writefln("         ymt add --receipt 523.2 --typeID 1 --nameID 1");
-        writefln("         ymt list types");
-        writefln("         ymt list names\n");
+        writefln("         ymt add --receipt 523.2 --typeID 1 --nameID 1\n");
         return;
     }
 
-    if(list !is null) {
-        dbList(list);
-    } else if(type !is null) {
+    if(type !is null) {
         dbAddType(type);
     } else if(name !is null) {
         dbAddName(name, typeID);
@@ -104,6 +109,38 @@ void parseArgs(string[] args) {
         dbAddReceipt(receipt, nameID, typeID);
     }
 }
+
+void parseList(string[] args) {
+    if(args.length <= 2) {
+        writefln("#ymt list: no option is specified! See \'ymt list -h\' for more info.");
+        return;
+    }
+
+    // commands
+    immutable data = args[2];
+
+    // check case
+    switch(data) {
+        case "-h":
+        case "--help":
+            writefln("\nymt list version %s -- list database data.", YMT_VERSION);
+            writefln("   types list available categories");
+            writefln("   names list names within those categories");
+            writefln("receipts list receipt data, where N/-N is number of oldest/latest entries\n");
+            writefln("EXAMPLE: ymt list [OPTION]\n");
+            break;
+        case "types":
+        case "names":
+        case "receipts":
+            dbList(data);
+            break;
+        default:
+            writefln("#ymt list: Unrecognized option %s!", data);
+            break;
+    }
+}
+
+void parseQuery(const string[] args) {}
 
 
 

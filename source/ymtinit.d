@@ -1,6 +1,6 @@
 module ymtinit;
 
-import d2sqlite3: Database;
+import std.string: format;
 import std.file: exists, mkdir, remove, rmdirRecurse;
 import std.path: buildPath;
 import std.stdio: File, writefln;
@@ -55,7 +55,7 @@ void dbInit(const string dbname) {
             "Date"			Date NOT NULL,
             "ProductTypeID"	INTEGER NOT NULL,
             "ProductNameID"	INTEGER,
-            "Receipt"		REAL NOT NULL, PRIMARY KEY("ProductTypeID")
+            "Receipt"		REAL NOT NULL
         );
     `);
 

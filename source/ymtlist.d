@@ -27,14 +27,14 @@ void dbList(const string data) {
     // open db
     auto db = Database(basedir.buildPath(dbname));
 
-    // prepare a querry
-    immutable querry = `
+    // prepare a query
+    immutable query = `
         SELECT * FROM %s
     `;
 
     // retrieve data
     if(data == "types") {
-        auto results = db.execute(querry.format("ProductType"));
+        auto results = db.execute(query.format("ProductType"));
         
         // list data
         writefln("%5s   %s", "ID", "Type");
@@ -44,7 +44,7 @@ void dbList(const string data) {
             writefln("%5s   %s", id, type);
         }
     } else if(data == "names") {
-        auto results = db.execute(querry.format("ProductName"));
+        auto results = db.execute(query.format("ProductName"));
         
         // list data
         writefln("%5s   %6s   %s", "ID", "TypeID", "Name");
@@ -54,8 +54,15 @@ void dbList(const string data) {
             auto name = row["ProductName"].as!string;
             writefln("%5s   %6s   %s", id, typeID, name);
         }
+    }  else if(data == "layout") {
+        writefln(
+            "\n#ymt list: table layout\n\n%s\n%s\n%s", 
+            "ProductType:\n--------------------\n| ProductType | ID |\n--------------------\n", 
+            "ProductName:\n------------------------------------\n| ProductName | ProductTypeID | ID |\n------------------------------------\n", 
+            "Receipt:\n--------------------------------------------------\n| Date | ProductTypeID | ProductNameID | Receipt |\n--------------------------------------------------\n"
+        );
     } else {
-        auto results = db.execute(querry.format("Receipt"));
+        auto results = db.execute(query.format("Receipt"));
         
         // list data
         writefln("%10s   %6s   %6s   %s", "Date", "TypeID", "NameID", "Receipt");

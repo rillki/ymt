@@ -10,6 +10,7 @@ import ymtcommon;
 import ymtinit;
 import ymtadd;
 import ymtlist;
+import ymtquery;
 
 void main(string[] args) {
     if(args.length < 2) {
@@ -38,7 +39,7 @@ void main(string[] args) {
             parseList(args);
             break;
         case "query":
-            // query
+            parseQuery(args);
             break;
         case "clean":
             dbClean();
@@ -117,30 +118,58 @@ void parseList(string[] args) {
     }
 
     // commands
-    immutable data = args[2];
+    immutable command = args[2];
 
     // check case
-    switch(data) {
+    switch(command) {
         case "-h":
         case "--help":
             writefln("\nymt list version %s -- list database data.", YMT_VERSION);
             writefln("   types list available categories");
             writefln("   names list names within those categories");
             writefln("receipts list receipt data, where N/-N is number of oldest/latest entries\n");
+            writefln("  layout list database table layout\n");
             writefln("EXAMPLE: ymt list [OPTION]\n");
             break;
         case "types":
         case "names":
         case "receipts":
-            dbList(data);
+        case "layout":
+            dbList(command);
             break;
         default:
-            writefln("#ymt list: Unrecognized option %s!", data);
+            writefln("#ymt list: Unrecognized option %s!", command);
             break;
     }
 }
 
-void parseQuery(const string[] args) {}
+void parseQuery(const string[] args) {
+    if(args.length <= 2) {
+        writefln("#ymt query: no option is specified! See \'ymt query -h\' for more info.");
+        return;
+    }
+
+    // commands
+    immutable command = args[2];
+    immutable query = args.length > 3 ? args[3] : null;
+
+    // check case
+    switch(command) {
+        case "-h":
+        case "--help":
+            writefln("\nymt query version %s -- use custom query.", YMT_VERSION);
+            writefln("   -e --execute \"your MySQL query\"");
+            writefln("EXAMPLE: ymt query -e \"INSERT INTO ProductType (ProductType) VALUES (\\\"Cake\\\")\"\n");
+            break;
+        case "-e":
+        case "--execute":
+            dbQuery(query);
+            break;
+        default:
+            writefln("#ymt query: Unrecognized option %s!", command);
+            break;
+    }
+}
 
 
 

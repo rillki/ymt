@@ -56,7 +56,7 @@ void dbList(const string data) {
         }
     }  else if(data == "layout") {
         writefln(
-            "\n#ymt list: table layout\n\n%s\n%s\n%s", 
+            "\n#ymt list: DB layout\n\n%s\n%s\n%s", 
             "ProductType:\n--------------------\n| ProductType | ID |\n--------------------\n", 
             "ProductName:\n------------------------------------\n| ProductName | ProductTypeID | ID |\n------------------------------------\n", 
             "Receipt:\n--------------------------------------------------\n| Date | ProductTypeID | ProductNameID | Receipt |\n--------------------------------------------------\n"

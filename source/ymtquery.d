@@ -3,7 +3,6 @@ module ymtquery;
 import std.file: readText, exists;
 import std.path: buildPath;
 import std.stdio: writefln;
-import std.format: format;
 
 import ymtcommon;
 

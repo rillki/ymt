@@ -23,37 +23,50 @@ void main(string[] args) {
 
     // check which case is it
     switch(args[1]) {
+        case "i":
         case "init":
             dbInit(dbname);
             break;
+        case "r":
         case "remove":
             dbRemove(dbname);
             break;
+        case "s":
         case "switch":
             dbSwitch(dbname);
             break;
+        case "a":
         case "add":
             parseAdd(args);
             break;
+        case "l":
         case "list":
             parseList(args);
             break;
+        case "q":
         case "query":
             parseQuery(args);
             break;
+        case "c":
         case "clean":
             dbClean();
             break;
+        case "v":
+        case "version":
+            writefln("\nymt version %s - Your Money Tracker.\n", YMT_VERSION);
+            break;
+        case "h":
         case "help":
             writefln("\nymt version %s - Your Money Tracker.", YMT_VERSION);
-            writefln("  init <dbname>  initializes a new database");
-            writefln("remove <dbname>  removes an existing database");
-            writefln("switch <dbname>  switches to the specified database");
-            writefln("   add [OPTIONS] use -h to read the usage manual on adding data");
-            writefln("  list [OPTIONS] use -h to read the usage manual on listing data");
-            writefln(" query [OPTIONS] use -h to read the usage manual on querying data");
-            writefln(" clean           delete all data");
-            writefln("  help           this help manual\n");
+            writefln("i    init <dbname>  initializes a new database");
+            writefln("r  remove <dbname>  removes an existing database");
+            writefln("s  switch <dbname>  switches to the specified database");
+            writefln("a     add [OPTIONS] use -h to read the usage manual on adding data");
+            writefln("l    list [OPTIONS] use -h to read the usage manual on listing data");
+            writefln("q   query [OPTIONS] use -h to read the usage manual on querying data");
+            writefln("c   clean           delete all data");
+            writefln("v version           display current version");
+            writefln("h    help           this help manual\n");
             writefln("EXAMPLE: ymt init crow.db\n");
             break;
         default:

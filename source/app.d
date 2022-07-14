@@ -141,7 +141,8 @@ void parseList(string[] args) {
             writefln("   types list available categories");
             writefln("   names list names within those categories");
             writefln("receipts list receipt data, where N/-N is number of oldest/latest entries\n");
-            writefln("  layout list database table layout\n");
+            writefln("  layout list database table layout");
+            writefln(" savedir show YMT save directory\n");
             writefln("EXAMPLE: ymt list [OPTION]\n");
             break;
         case "types":
@@ -149,6 +150,9 @@ void parseList(string[] args) {
         case "receipts":
         case "layout":
             dbList(command);
+            break;
+        case "savedir":
+            writefln("%s", basedir);
             break;
         default:
             writefln("#ymt list: Unrecognized option %s!", command);

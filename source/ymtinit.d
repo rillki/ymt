@@ -80,7 +80,7 @@ void dbRemove(const string dbname) {
     file.close();
 
     // verbose output
-    writefln("#ymt remove: removed ymt/%s!", dbname);
+    writefln("#ymt remove: removed %s!", basedir.buildPath(dbname));
 }
 
 /// Switch from one db to another (modifies the config file)
@@ -110,10 +110,10 @@ void dbClean() {
     if(basedir.exists) {
         basedir.rmdirRecurse();
     } else {
-        writefln("\n#ymt clean: canceled! %s has already been removed!\n", basedir);
+        writefln("\n#ymt clean: canceled! %s was not found!\n", basedir);
         return;
     }
 
     // verbose output
-    writefln("#ymt clean: successfully removed all data!");
+    writefln("#ymt clean: %s was removed!", basedir);
 }

@@ -10,22 +10,18 @@ import ymtcommon;
 /// Creates a .ymt folder, db and a config file
 void dbInit(const string dbname) {
     if(dbname is null) {
-        writefln("#ymt: dbname not provided! See \'ymt -h\' for more info!", dbname);
+        writefln("#ymt init: dbname not provided! See \'ymt -h\' for more info!", dbname);
         return;
     }
 
     // create .ymt folder exists along with a config file
-    version(Windows) {
-        //...
-    } else {
-        if(!basedir.exists) {
-            basedir.mkdir();
-        }
+    if(!basedir.exists) {
+        basedir.mkdir();
     }
 
     // check if db exists
     if(basedir.buildPath(dbname).exists) {
-        writefln("#ymt: %s already exists!", dbname);
+        writefln("#ymt init: %s already exists!", dbname);
         return;
     }
 
@@ -65,13 +61,13 @@ void dbInit(const string dbname) {
     file.close();
 
     // verbose output
-    writefln("#ymt: created ymt/%s!", dbname);
+    writefln("#ymt init: created ymt/%s!", dbname);
 }
 
 /// Removes db
 void dbRemove(const string dbname) {
     if(dbname is null) {
-        writefln("#ymt: dbname not provided! See \'ymt -h\' for more info!", dbname);
+        writefln("#ymt remove: dbname not provided! See \'ymt -h\' for more info!", dbname);
         return;
     }
 
@@ -84,19 +80,19 @@ void dbRemove(const string dbname) {
     file.close();
 
     // verbose output
-    writefln("#ymt: removed ymt/%s!", dbname);
+    writefln("#ymt remove: removed ymt/%s!", dbname);
 }
 
 /// Switch from one db to another (modifies the config file)
 void dbSwitch(const string dbname) {
     if(dbname is null) {
-        writefln("#ymt: dbname not provided! See \'ymt -h\' for more info!", dbname);
+        writefln("#ymt switch: dbname not provided! See \'ymt -h\' for more info!", dbname);
         return;
     }
 
     // check if db exists
     if(!basedir.buildPath(dbname).exists) {
-        writefln("\n#ymt: %s does not exist!\n", dbname);
+        writefln("\n#ymt switch: %s does not exist!\n", dbname);
         return;
     }
 
@@ -106,15 +102,18 @@ void dbSwitch(const string dbname) {
     file.close();
 
     // verbose output
-    writefln("#ymt: switched to ymt/%s!", dbname);
+    writefln("#ymt switch: switched to ymt/%s!", dbname);
 }
 
 /// Delete the entire '.ymt' directory with all db's and configs
 void dbClean() {
     if(basedir.exists) {
         basedir.rmdirRecurse();
+    } else {
+        writefln("\n#ymt clean: canceled! %s has already been removed!\n", basedir);
+        return;
     }
 
     // verbose output
-    writefln("#ymt: removed all data!");
+    writefln("#ymt clean: successfully removed all data!");
 }

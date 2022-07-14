@@ -140,8 +140,8 @@ void parseList(string[] args) {
             writefln("\nymt list version %s -- list database data.", YMT_VERSION);
             writefln("   types list available categories");
             writefln("   names list names within those categories");
-            writefln("receipts list receipt data, where N/-N is number of oldest/latest entries\n");
-            writefln("  layout list database table layout");
+            writefln("receipts list receipt data, where N/-N is number of oldest/latest entries");
+            writefln("  layout show database table layout");
             writefln(" savedir show YMT save directory\n");
             writefln("EXAMPLE: ymt list [OPTION]\n");
             break;

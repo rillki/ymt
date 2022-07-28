@@ -53,11 +53,11 @@ void main(string[] args) {
             break;
         case "v":
         case "version":
-            writefln("\nymt version %s - Your Money Tracker.\n", YMT_VERSION);
+            writefln("ymt version %s - Your Money Tracker.", YMT_VERSION);
             break;
         case "h":
         case "help":
-            writefln("\nymt version %s - Your Money Tracker.", YMT_VERSION);
+            writefln("ymt version %s - Your Money Tracker.", YMT_VERSION);
             writefln("i    init <dbname>  initializes a new database");
             writefln("r  remove <dbname>  removes an existing database");
             writefln("s  switch <dbname>  switches to the specified database");
@@ -67,7 +67,7 @@ void main(string[] args) {
             writefln("c   clean           delete all data");
             writefln("v version           display current version");
             writefln("h    help           this help manual\n");
-            writefln("EXAMPLE: ymt init crow.db\n");
+            writefln("EXAMPLE: ymt init crow.db");
             break;
         default:
             writefln("#ymt: Unrecognized option %s!", args[1]);
@@ -102,16 +102,16 @@ void parseAdd(string[] args) {
             "receipt|r", "add receipt", &receipt,
         );
     } catch(Exception e) {
-        writefln("\n#ymt add: error! %s\n", e.msg);
+        writefln("#ymt add: error! %s", e.msg);
         return;
     }
 
     // print ymt usage
     if(argInfo.helpWanted) {
-        defaultGetoptPrinter("\nymt add version %s -- add your data.".format(YMT_VERSION), argInfo.options);
+        defaultGetoptPrinter("ymt add version %s -- add your data.".format(YMT_VERSION), argInfo.options);
         writefln("\nEXAMPLE: ymt add --type=Dairy");
         writefln("         ymt add --name Milk --typeID 1");
-        writefln("         ymt add --receipt 523.2 --typeID 1 --nameID 1\n");
+        writefln("         ymt add --receipt 523.2 --typeID 1 --nameID 1");
         return;
     }
 
@@ -137,13 +137,14 @@ void parseList(string[] args) {
     switch(command) {
         case "-h":
         case "--help":
-            writefln("\nymt list version %s -- list database data.", YMT_VERSION);
+            writefln("ymt list version %s -- list database data.", YMT_VERSION);
+            writefln("OPTIONS:");
             writefln("   types list available categories");
             writefln("   names list names within those categories");
             writefln("receipts list receipt data, where N/-N is number of oldest/latest entries");
             writefln("  layout show database table layout");
             writefln(" savedir show YMT save directory\n");
-            writefln("EXAMPLE: ymt list [OPTION]\n");
+            writefln("EXAMPLE: ymt list [OPTION]");
             break;
         case "types":
         case "names":
@@ -174,9 +175,9 @@ void parseQuery(const string[] args) {
     switch(command) {
         case "-h":
         case "--help":
-            writefln("\nymt query version %s -- use custom query.", YMT_VERSION);
+            writefln("ymt query version %s -- use custom query.", YMT_VERSION);
             writefln("   -e --execute \"your MySQL query\"");
-            writefln("EXAMPLE: ymt query -e \"INSERT INTO ProductType (ProductType) VALUES (\\\"Cake\\\")\"\n");
+            writefln("EXAMPLE: ymt query -e \"INSERT INTO Type (Type) VALUES (\\\"Cake\\\")\"");
             break;
         case "-e":
         case "--execute":

@@ -34,32 +34,32 @@ void dbList(const string data) {
 
     // retrieve data
     if(data == "types") {
-        auto results = db.execute(query.format("ProductType"));
+        auto results = db.execute(query.format("Type"));
         
         // list data
         writefln("%5s   %s", "ID", "Type");
         foreach(row; results) {
             auto id = row["ID"].as!uint;
-            auto type = row["ProductType"].as!string;
+            auto type = row["Type"].as!string;
             writefln("%5s   %s", id, type);
         }
     } else if(data == "names") {
-        auto results = db.execute(query.format("ProductName"));
+        auto results = db.execute(query.format("Name"));
         
         // list data
         writefln("%5s   %6s   %s", "ID", "TypeID", "Name");
         foreach(row; results) {
             auto id = row["ID"].as!uint;
-            auto typeID = row["ProductTypeID"].as!uint;
-            auto name = row["ProductName"].as!string;
+            auto typeID = row["TypeID"].as!uint;
+            auto name = row["Name"].as!string;
             writefln("%5s   %6s   %s", id, typeID, name);
         }
     }  else if(data == "layout") {
         writefln(
             "\n#ymt list: DB layout\n\n%s\n%s\n%s", 
-            "ProductType:\n--------------------\n| ProductType | ID |\n--------------------\n", 
-            "ProductName:\n------------------------------------\n| ProductName | ProductTypeID | ID |\n------------------------------------\n", 
-            "Receipt:\n--------------------------------------------------\n| Date | ProductTypeID | ProductNameID | Receipt |\n--------------------------------------------------\n"
+            "Type:\n-------------\n| Type | ID |\n-------------\n", 
+            "Name:\n----------------------\n| Name | TypeID | ID |\n----------------------\n", 
+            "Receipt:\n------------------------------------\n| Date | TypeID | NameID | Receipt |\n------------------------------------\n"
         );
     } else {
         auto results = db.execute(query.format("Receipt"));
@@ -68,8 +68,8 @@ void dbList(const string data) {
         writefln("%10s   %6s   %6s   %s", "Date", "TypeID", "NameID", "Receipt");
         foreach(row; results) {
             auto date = row["Date"].as!string;
-            auto typeID = row["ProductTypeID"].as!uint;
-            auto nameID = row["ProductNameID"].as!string;
+            auto typeID = row["TypeID"].as!uint;
+            auto nameID = row["NameID"].as!string;
             auto receipt = row["Receipt"].as!long;
             writefln("%10s   %6s   %6s   %s", date, typeID, nameID, receipt);
         }

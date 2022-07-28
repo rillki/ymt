@@ -28,30 +28,30 @@ void dbInit(const string dbname) {
     // create a db file
     auto db = Database(basedir.buildPath(dbname));
 
-    // create ProductType table
+    // create Type table
     db.run(`
-        CREATE TABLE "ProductType" (
-            "ProductType" 	TEXT NOT NULL UNIQUE,
-            "ID" 			INTEGER NOT NULL UNIQUE, PRIMARY KEY("ID" AUTOINCREMENT)
+        CREATE TABLE "Type" (
+            "Type" 	TEXT NOT NULL UNIQUE,
+            "ID" 	INTEGER NOT NULL UNIQUE, PRIMARY KEY("ID" AUTOINCREMENT)
         );
     `);
 
-    // create ProductName table
+    // create Name table
     db.run(`
-        CREATE TABLE "ProductName" (
-            "ProductName"	TEXT NOT NULL UNIQUE,
-            "ID"			INTEGER NOT NULL UNIQUE, 
-            "ProductTypeID" INTEGER NOT NULL, PRIMARY KEY("ID" AUTOINCREMENT)
+        CREATE TABLE "Name" (
+            "Name"	 TEXT NOT NULL UNIQUE,
+            "ID"	 INTEGER NOT NULL UNIQUE, 
+            "TypeID" INTEGER NOT NULL, PRIMARY KEY("ID" AUTOINCREMENT)
         );
     `);
 
     // create RegionPricing table
     db.run(`
         CREATE TABLE "Receipt" (
-            "Date"			Date NOT NULL,
-            "ProductTypeID"	INTEGER NOT NULL,
-            "ProductNameID"	INTEGER,
-            "Receipt"		REAL NOT NULL
+            "Date"		Date NOT NULL,
+            "TypeID"	INTEGER NOT NULL,
+            "NameID"	INTEGER,
+            "Receipt"	REAL NOT NULL
         );
     `);
 
@@ -92,7 +92,7 @@ void dbSwitch(const string dbname) {
 
     // check if db exists
     if(!basedir.buildPath(dbname).exists) {
-        writefln("\n#ymt switch: %s does not exist!\n", dbname);
+        writefln("#ymt switch: %s does not exist!", dbname);
         return;
     }
 
@@ -110,7 +110,7 @@ void dbClean() {
     if(basedir.exists) {
         basedir.rmdirRecurse();
     } else {
-        writefln("\n#ymt clean: canceled! %s was not found!\n", basedir);
+        writefln("#ymt clean: canceled! %s was not found!", basedir);
         return;
     }
 

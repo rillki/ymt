@@ -28,14 +28,14 @@ void dbAddType(const string type) {
 
     // prepare a query
     immutable query = `
-        INSERT INTO ProductType (ProductType) VALUES ("%s")
+        INSERT INTO Type (Type) VALUES ("%s")
     `;
 
     // add a new entry to database
     try {
         db.run(query.format(type));
     } catch(Exception e) {
-        writefln("\n#ymt add: %s\n", e.msg);
+        writefln("#ymt add: %s", e.msg);
     }
 }
 
@@ -60,14 +60,14 @@ void dbAddName(const string name, const uint typeID) {
 
     // prepare a query
     immutable query = `
-        INSERT INTO ProductName (ProductName, ProductTypeID) VALUES ("%s", %s)
+        INSERT INTO Name (Name, TypeID) VALUES ("%s", %s)
     `;
 
     // add a new entry to database
     try {
         db.run(query.format(name, typeID));
     } catch(Exception e) {
-        writefln("\n#ymt add: %s\n", e.msg);
+        writefln("#ymt add: %s", e.msg);
     }
 }
 
@@ -92,13 +92,13 @@ void dbAddReceipt(const float receipt, const uint nameID, const uint typeID) {
 
     // prepare a query
     immutable query = `
-        INSERT INTO Receipt (Date, ProductNameID, ProductTypeID, Receipt) VALUES (CURRENT_DATE, %s, %s, %s)
+        INSERT INTO Receipt (Date, NameID, TypeID, Receipt) VALUES (CURRENT_DATE, %s, %s, %s)
     `;
 
     // add a new entry to database
     try {
         db.run(query.format(nameID, typeID, receipt));
     } catch(Exception e) {
-        writefln("\n#ymt add: %s\n", e.msg);
+        writefln("#ymt add: %s", e.msg);
     }
 }

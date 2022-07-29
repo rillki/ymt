@@ -136,42 +136,24 @@ void parseList(string[] args) {
 
     // list command
     immutable command = args[2];
+    immutable subCommandsList = [
+        "-l", "--limit", 
+        "-x", "--typeID", 
+        "-t", "--today",
+        "-w", "--lastweek",
+        "-m", "--lastmonth",
+        "-a", "--all"
+    ];
 
-    // filtering
-    // TODO: refactor code
+    // filter subcommand
     string filtercmd = args.length > 3 ? args[3] : "";
-    if(filtercmd.canFind("=")) {
-        auto temp = filtercmd.split("=");
-        filtercmd = (temp[0] == "--typeID" || temp[0] == "-x") ? temp[$-1] : "";
-        filtercmd = [
-            "-l", "--limit", 
-            "-x", "--typeID", 
-            "-t", "--today",
-            "-w", "--lastweek",
-            "-m", "--lastmonth",
-            "-a", "--all"
-        ].canFind(temp[0]) ? temp[$-1] : "";
-
-        if(filtercmd.empty) {
-            writefln("#ymt list: Unrecognized option %s!", temp[0]);
-            return;
-        }
-    } else if(args.length > 4) {
-        filtercmd = [
-            "-l", "--limit", 
-            "-x", "--typeID", 
-            "-t", "--today",
-            "-w", "--lastweek",
-            "-m", "--lastmonth",
-            "-a", "--all"
-        ].canFind(filtercmd) ? filtercmd : "";
-
-        if(filtercmd.empty) {
-            writefln("#ymt list: Unrecognized option %s!", args[3]);
-            return;
-        }
-
-        filtercmd = args[4];
+    if(filtercmd.canFind("=") && subCommandsList.canFind(filtercmd.split("=")[0])) {
+        filtercmd = filtercmd.split("=")[$-1];
+    } else if(subCommandsList.canFind(filtercmd)) {
+        filtercmd = args.length > 4 ? args[4] : filtercmd;
+    } else if(args.length > 3) {
+        writefln("#ymt list: Unrecognized option %s!", filtercmd);
+        return;
     }
 
     // check case

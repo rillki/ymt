@@ -34,9 +34,9 @@ void dbList(const string data, const string filtercmd) {
 
     // retrieve data
     if(data == "types") {
-        // if we filtering is enabled
+        // if we filtering is specified
         if(filtercmd.isNumeric) {
-            query = `SELECT * FROM %s ORDER BY ID `~ 
+            query ~= ` ORDER BY ID `~ 
                 (filtercmd[0] == '-' ? "DESC" : "ASC") ~ 
                 ` LIMIT ` ~ 
                 (filtercmd[0] == '-' ? filtercmd[1..$] : filtercmd);
@@ -53,9 +53,9 @@ void dbList(const string data, const string filtercmd) {
             writefln("%6s   %s", id, type);
         }
     } else if(data == "names") {
-        // if we filtering is enabled
+        // if we filtering is specified
         if(filtercmd.isNumeric) {
-            query = `SELECT * FROM %s WHERE TypeID=` ~ filtercmd;
+            query ~= ` WHERE TypeID=` ~ filtercmd;
         }
 
         // execute query
@@ -77,18 +77,19 @@ void dbList(const string data, const string filtercmd) {
             "Receipt:\n------------------------------------\n| Date | TypeID | NameID | Receipt |\n------------------------------------\n"
         );
     } else {
+        // if filtering is specified
         switch(filtercmd) {
             case "-t":
             case "--today":
-                query = `SELECT * FROM %s WHERE date=CURRENT_DATE`;
+                query ~= ` WHERE date=CURRENT_DATE`;
                 break;
             case "-w":
             case "--lastweek":
-                query = `SELECT * FROM %s WHERE date<=CURRENT_DATE AND date>=CURRENT_DATE-6`;
+                query ~= ` WHERE date<=CURRENT_DATE AND date>=CURRENT_DATE-6`;
                 break;
             case "-m":
             case "--lastmonth":
-                query = `SELECT * FROM %s WHERE date<=CURRENT_DATE AND date>=CURRENT_DATE-30`;
+                query ~= ` WHERE date<=CURRENT_DATE AND date>=CURRENT_DATE-30`;
                 break;
             default:
                 break;

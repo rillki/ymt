@@ -55,7 +55,9 @@ void main(string[] args) {
             break;
         case "v":
         case "version":
+            import std.compiler: version_major, version_minor;
             writefln("ymt version %s - Your Money Tracker.", YMT_VERSION);
+            writefln("Built with %s v%s.%s on %s", __VENDOR__, version_major, version_minor, __TIMESTAMP__);
             break;
         case "h":
         case "help":

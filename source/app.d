@@ -3,8 +3,10 @@ module app;
 
 import std.stdio: writefln;
 import std.conv: to;
-import std.string: format;
+import std.array: empty;
+import std.string: format, split;
 import std.getopt: getopt, GetoptResult, defaultGetoptPrinter;
+import std.algorithm.searching: canFind;
 
 import ymtcommon;
 import ymtinit;
@@ -130,8 +132,45 @@ void parseList(string[] args) {
         return;
     }
 
-    // commands
+    // list command
     immutable command = args[2];
+
+    // filtering
+    // TODO: refactor code
+    string filtercmd = args.length > 3 ? args[3] : "";
+    if(filtercmd.canFind("=")) {
+        auto temp = filtercmd.split("=");
+        filtercmd = (temp[0] == "--typeID" || temp[0] == "-x") ? temp[$-1] : "";
+        filtercmd = [
+            "-l", "--limit", 
+            "-x", "--typeID", 
+            "-t", "--today",
+            "-w", "--lastweek",
+            "-m", "--lastmonth",
+            "-a", "--all"
+        ].canFind(temp[0]) ? temp[$-1] : "";
+
+        if(filtercmd.empty) {
+            writefln("#ymt list: Unrecognized option %s!", temp[0]);
+            return;
+        }
+    } else if(args.length > 4) {
+        filtercmd = [
+            "-l", "--limit", 
+            "-x", "--typeID", 
+            "-t", "--today",
+            "-w", "--lastweek",
+            "-m", "--lastmonth",
+            "-a", "--all"
+        ].canFind(filtercmd) ? filtercmd : "";
+
+        if(filtercmd.empty) {
+            writefln("#ymt list: Unrecognized option %s!", args[3]);
+            return;
+        }
+
+        filtercmd = args[4];
+    }
 
     // check case
     switch(command) {
@@ -140,17 +179,23 @@ void parseList(string[] args) {
             writefln("ymt list version %s -- list database data.", YMT_VERSION);
             writefln("OPTIONS:");
             writefln("   types list available categories");
+            writefln("         -l --limit list last N rows");
             writefln("   names list names within those categories");
-            writefln("receipts list receipt data, where N/-N is number of oldest/latest entries");
+            writefln("         -x --typeID filter using type id");
+            writefln("receipts list receipt data");
+            writefln("         -t     --today list data added today");
+            writefln("         -w  --lastweek list data for past 7 days");
+            writefln("         -m --lastmonth list data for past 30 days");
+            writefln("         -a       --all list all available data");
             writefln("  layout show database table layout");
             writefln(" savedir show YMT save directory\n");
-            writefln("EXAMPLE: ymt list [OPTION]");
+            writefln("EXAMPLE: ymt list [OPTIONS]");
             break;
         case "types":
         case "names":
         case "receipts":
         case "layout":
-            dbList(command);
+            dbList(command, filtercmd);
             break;
         case "savedir":
             writefln("%s", basedir);

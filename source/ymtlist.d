@@ -1,14 +1,16 @@
 module ymtlist;
 
+import std.math: abs;
 import std.file: readText, exists;
 import std.path: buildPath;
 import std.stdio: writefln;
 import std.format: format;
-import std.math: abs;
+import std.string: isNumeric;
+import std.algorithm.searching: canFind;
 
 import ymtcommon;
 
-void dbList(const string data) {
+void dbList(const string data, const string filtercmd) {
     // check if basedir exists
     if(!basedir.exists) {
         writefln("#ymt list: error! Initialize ymt first!");
@@ -27,32 +29,45 @@ void dbList(const string data) {
     // open db
     auto db = Database(basedir.buildPath(dbname));
 
-    // prepare a query
-    immutable query = `
-        SELECT * FROM %s
-    `;
+    // prepare a generic query
+    string query = `SELECT * FROM %s`;
 
     // retrieve data
     if(data == "types") {
+        // if we filtering is enabled
+        if(filtercmd.isNumeric) {
+            query = `SELECT * FROM %s ORDER BY ID `~ 
+                (filtercmd[0] == '-' ? "DESC" : "ASC") ~ 
+                ` LIMIT ` ~ 
+                (filtercmd[0] == '-' ? filtercmd[1..$] : filtercmd);
+        }
+        
+        // execute query
         auto results = db.execute(query.format("Type"));
         
         // list data
-        writefln("%5s   %s", "ID", "Type");
+        writefln("%6s   %s", "ID", "Type");
         foreach(row; results) {
             auto id = row["ID"].as!uint;
             auto type = row["Type"].as!string;
-            writefln("%5s   %s", id, type);
+            writefln("%6s   %s", id, type);
         }
     } else if(data == "names") {
+        // if we filtering is enabled
+        if(filtercmd.isNumeric) {
+            query = `SELECT * FROM %s WHERE TypeID=` ~ filtercmd;
+        }
+
+        // execute query
         auto results = db.execute(query.format("Name"));
         
         // list data
-        writefln("%5s   %6s   %s", "ID", "TypeID", "Name");
+        writefln("%6s   %6s   %s", "ID", "TypeID", "Name");
         foreach(row; results) {
             auto id = row["ID"].as!uint;
             auto typeID = row["TypeID"].as!uint;
             auto name = row["Name"].as!string;
-            writefln("%5s   %6s   %s", id, typeID, name);
+            writefln("%6s   %6s   %s", id, typeID, name);
         }
     }  else if(data == "layout") {
         writefln(
@@ -62,6 +77,24 @@ void dbList(const string data) {
             "Receipt:\n------------------------------------\n| Date | TypeID | NameID | Receipt |\n------------------------------------\n"
         );
     } else {
+        switch(filtercmd) {
+            case "-t":
+            case "--today":
+                query = `SELECT * FROM %s WHERE date=CURRENT_DATE`;
+                break;
+            case "-w":
+            case "--lastweek":
+                query = `SELECT * FROM %s WHERE date<=CURRENT_DATE AND date>=CURRENT_DATE-6`;
+                break;
+            case "-m":
+            case "--lastmonth":
+                query = `SELECT * FROM %s WHERE date<=CURRENT_DATE AND date>=CURRENT_DATE-30`;
+                break;
+            default:
+                break;
+        }
+
+        // execute query
         auto results = db.execute(query.format("Receipt"));
         
         // list data

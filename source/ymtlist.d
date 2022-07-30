@@ -10,7 +10,7 @@ import std.algorithm.searching: canFind;
 
 import ymtcommon;
 
-void dbList(const string command, const string filtercmd) {
+void dbList(in string command, in string filtercmd) {
     // check if basedir exists
     if(!basedir.exists) {
         writefln("#ymt list: error! Initialize ymt first!");

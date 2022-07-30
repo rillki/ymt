@@ -6,7 +6,7 @@ import std.stdio: writefln;
 
 import ymtcommon;
 
-void dbQuery(const string query) {
+void dbQuery(in string query) {
 	// check if got valid query
 	if(query is null) {
         writefln("#ymt query: no query provided!");

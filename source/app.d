@@ -49,6 +49,10 @@ void main(string[] args) {
         case "query":
             parseQuery(args);
             break;
+        case "e":
+        case "export":
+            parseExport(args);
+            break;
         case "c":
         case "clean":
             dbClean();
@@ -68,6 +72,7 @@ void main(string[] args) {
             writefln("a     add [OPTIONS] use -h to read the usage manual on adding data");
             writefln("l    list [OPTIONS] use -h to read the usage manual on listing data");
             writefln("q   query [OPTIONS] use -h to read the usage manual on querying data");
+            writefln("e  export [OPTIONS] use -h to read the usage manual on exporting data");
             writefln("c   clean           delete all data");
             writefln("v version           display current version");
             writefln("h    help           this help manual\n");
@@ -192,7 +197,7 @@ void parseList(string[] args) {
 }
 
 /// Parses 'query' command
-void parseQuery(const string[] args) {
+void parseQuery(string[] args) {
     if(args.length <= 2) {
         writefln("#ymt query: no option is specified! See \'ymt query -h\' for more info.");
         return;
@@ -219,6 +224,8 @@ void parseQuery(const string[] args) {
             break;
     }
 }
+
+void parseExport(string[] args) {}
 
 
 

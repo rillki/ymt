@@ -8,7 +8,7 @@ import std.stdio: File, writefln;
 import ymtcommon;
 
 /// Creates a .ymt folder, db and a config file
-void dbInit(const string dbname) {
+void dbInit(in string dbname) {
     if(dbname is null) {
         writefln("#ymt init: dbname not provided! See \'ymt -h\' for more info!", dbname);
         return;
@@ -65,7 +65,7 @@ void dbInit(const string dbname) {
 }
 
 /// Removes db
-void dbRemove(const string dbname) {
+void dbRemove(in string dbname) {
     if(dbname is null) {
         writefln("#ymt remove: dbname not provided! See \'ymt -h\' for more info!", dbname);
         return;
@@ -84,7 +84,7 @@ void dbRemove(const string dbname) {
 }
 
 /// Switch from one db to another (modifies the config file)
-void dbSwitch(const string dbname) {
+void dbSwitch(in string dbname) {
     if(dbname is null) {
         writefln("#ymt switch: dbname not provided! See \'ymt -h\' for more info!", dbname);
         return;

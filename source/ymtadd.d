@@ -7,7 +7,7 @@ import std.format: format;
 
 import ymtcommon;
 
-void dbAddType(const string type) {
+void dbAddType(in string type) {
     // check if basedir exists
     if(!basedir.exists) {
         writefln("#ymt add: error! Initialize ymt first!");
@@ -39,7 +39,7 @@ void dbAddType(const string type) {
     }
 }
 
-void dbAddName(const string name, const uint typeID) {
+void dbAddName(in string name, in uint typeID) {
     // check if basedir exists
     if(!basedir.exists) {
         writefln("#ymt add: error! Initialize ymt first!");
@@ -71,7 +71,7 @@ void dbAddName(const string name, const uint typeID) {
     }
 }
 
-void dbAddReceipt(const float receipt, const uint nameID, const uint typeID) {
+void dbAddReceipt(in float receipt, in uint nameID, in uint typeID) {
     // check if basedir exists
     if(!basedir.exists) {
         writefln("#ymt add: error! Initialize ymt first!");

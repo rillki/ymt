@@ -79,6 +79,7 @@ void main(string[] args) {
     }
 }
 
+/// Parses 'add' command
 void parseAdd(string[] args) {
     if(args.length < 3) {
         writefln("#ymt add: no option is specified! See \'ymt add -h\' for more info.");
@@ -128,6 +129,7 @@ void parseAdd(string[] args) {
     }
 }
 
+/// Parses 'list' command
 void parseList(string[] args) {
     if(args.length <= 2) {
         writefln("#ymt list: no option is specified! See \'ymt list -h\' for more info.");
@@ -189,6 +191,7 @@ void parseList(string[] args) {
     }
 }
 
+/// Parses 'query' command
 void parseQuery(const string[] args) {
     if(args.length <= 2) {
         writefln("#ymt query: no option is specified! See \'ymt query -h\' for more info.");

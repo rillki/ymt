@@ -1,14 +1,10 @@
 module ymtlist;
 
+import ymtcommon;
 import std.math: abs;
-import std.file: readText, exists;
-import std.path: buildPath;
-import std.stdio: writefln;
 import std.format: format;
 import std.string: isNumeric;
 import std.algorithm.searching: canFind;
-
-import ymtcommon;
 
 void dbList(in string command, in string filtercmd) {
     // check if basedir exists
@@ -16,9 +12,6 @@ void dbList(in string command, in string filtercmd) {
         writefln("#ymt list: error! Initialize ymt first!");
         return;
     }
-
-    // read config file to get db name
-    immutable dbname = basedir.buildPath(configFile).readText;
 
     // check if db exists
     if(!basedir.buildPath(dbname).exists) {

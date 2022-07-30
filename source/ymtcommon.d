@@ -1,19 +1,22 @@
 module ymtcommon;
 
-
 public {
     import d2sqlite3: Database;
-    import std.path: expandTilde;
+    import std.stdio: writefln;
+    import std.path: expandTilde, buildPath;
+    import std.file: readText, exists;
 
     enum YMT_VERSION = "0.1";
     enum configFile = "ymt.config";
 
     string basedir;
+    string dbname;
     static this() {
         version(Windows) {
             //
         } else {
             basedir = "~/.ymt".expandTilde;
+            dbname = basedir.exists ? basedir.buildPath(configFile).readText : "";
         }
     }
 }

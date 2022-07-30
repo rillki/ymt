@@ -1,11 +1,7 @@
 module ymtadd;
 
-import std.file: readText, exists;
-import std.path: buildPath;
-import std.stdio: writefln;
-import std.format: format;
-
 import ymtcommon;
+import std.format: format;
 
 void dbAddType(in string type) {
     // check if basedir exists
@@ -13,9 +9,6 @@ void dbAddType(in string type) {
         writefln("#ymt add: error! Initialize ymt first!");
         return;
     }
-
-    // read config file to get db name
-    immutable dbname = basedir.buildPath(configFile).readText;
 
     // check if db exists
     if(!basedir.buildPath(dbname).exists) {
@@ -46,9 +39,6 @@ void dbAddName(in string name, in uint typeID) {
         return;
     }
 
-    // read config file to get db name
-    immutable dbname = basedir.buildPath(configFile).readText;
-
     // check if db exists
     if(!basedir.buildPath(dbname).exists) {
         writefln("#ymt add: error! %s does not exist, you need to initialize one!", dbname);
@@ -77,9 +67,6 @@ void dbAddReceipt(in float receipt, in uint nameID, in uint typeID) {
         writefln("#ymt add: error! Initialize ymt first!");
         return;
     }
-
-    // read config file to get db name
-    immutable dbname = basedir.buildPath(configFile).readText;
 
     // check if db exists
     if(!basedir.buildPath(dbname).exists) {

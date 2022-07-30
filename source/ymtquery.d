@@ -1,9 +1,5 @@
 module ymtquery;
 
-import std.file: readText, exists;
-import std.path: buildPath;
-import std.stdio: writefln;
-
 import ymtcommon;
 
 void dbQuery(in string query) {
@@ -18,9 +14,6 @@ void dbQuery(in string query) {
         writefln("#ymt query: error! Initialize ymt first!");
         return;
     }
-
-    // read config file to get db name
-    immutable dbname = basedir.buildPath(configFile).readText;
 
     // check if db exists
     if(!basedir.buildPath(dbname).exists) {

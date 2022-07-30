@@ -1,12 +1,8 @@
 module ymtexport;
 
-import std.stdio: writefln;
-import std.file: readText, exists;
-import std.path: buildPath;
+import ymtcommon;
 import std.array: join;
 import std.format: format;
-
-import ymtcommon;
 
 void dbExportCSV(in string savepath = basedir, in char sep = ';') {
     // check if savepath exists
@@ -38,7 +34,42 @@ void dbExportCSV(in string savepath = basedir, in char sep = ';') {
     arr2csv(csv_dbReceipts, dbData.dbReceipts);
 }
 
-void dbExportExcel() {}
+void dbExportExcel(in string savepath = basedir) {
+    import std.conv: to;
+    import libxlsxd: newWorkbook;
+
+    // check if savepath exists
+    if(!savepath.exists) {
+        writefln("#ymt export: %s does not exist!", savepath);
+        return;
+    }
+
+    // get data
+    auto dbData = dbGetData();
+
+    // files
+    immutable sheet_dbTypes = dbData.dbTypes.stringof;
+    immutable sheet_dbNames = dbData.dbNames.stringof;
+    immutable sheet_dbReceipts = dbData.dbReceipts.stringof;
+
+    // create workbook
+    auto workbook  = newWorkbook(savepath.buildPath(dbname ~ ".xlsx"));
+    
+    /// Write data to CSV
+    void arr2excel(typeof(workbook) wb, in string sheetName, in string[][] data) {
+        auto worksheet = wb.addWorksheet(sheetName);
+        foreach(i, row; data) {
+            foreach(j, d; row) {
+                worksheet.writeString(i.to!uint, j.to!ushort, d);
+            }
+        }
+    }
+
+    // save dbTypes, dbNames, dbReceipts
+    arr2excel(workbook, sheet_dbTypes, dbData.dbTypes);
+    arr2excel(workbook, sheet_dbNames, dbData.dbNames);
+    arr2excel(workbook, sheet_dbReceipts, dbData.dbReceipts);
+}
 
 private auto dbGetData() {
     // data
@@ -49,9 +80,6 @@ private auto dbGetData() {
         writefln("#ymt add: error! Initialize ymt first!");
         return dbData();
     }
-
-    // read config file to get db name
-    immutable dbname = basedir.buildPath(configFile).readText;
 
     // check if db exists
     if(!basedir.buildPath(dbname).exists) {

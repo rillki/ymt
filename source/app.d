@@ -4,7 +4,7 @@ module app;
 import std.stdio: writefln;
 import std.conv: to;
 import std.array: empty;
-import std.string: format, split;
+import std.string: format, split, toUpper;
 import std.getopt: getopt, GetoptResult, defaultGetoptPrinter;
 import std.algorithm.mutation: remove;
 import std.algorithm.searching: canFind;
@@ -262,11 +262,14 @@ void parseExport(string[] args) {
     if(type == "csv") {
         dbExportCSV(savepath);
     } else if(type == "excel") {
-        // coming soon
-        writefln("#ymt export: Coming soon!");
+        dbExportExcel(savepath);
     } else {
         writefln("#ymt export: Unrecognized option %s!", type);
+        return;
     }
+
+    // done
+    writefln("#ymt export: data saved as %s file to %s", type.toUpper, savepath);
 }
 
 

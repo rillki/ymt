@@ -1,8 +1,7 @@
 module ymtinit;
 
 import std.string: format;
-import std.file: exists, mkdir, remove, rmdirRecurse;
-import std.path: buildPath;
+import std.file: mkdir, remove, rmdirRecurse;
 import std.stdio: File, writefln;
 
 import ymtcommon;

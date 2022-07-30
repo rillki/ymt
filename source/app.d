@@ -136,15 +136,14 @@ void parseList(string[] args) {
 
     // list command
     immutable command = args[2];
-    immutable subCommandsList = [
-        "-l", "--limit", 
-        "-x", "--typeID", 
-        "-t", "--today",
-        "-w", "--lastweek",
-        "-m", "--lastmonth",
-        "-a", "--all"
-    ];
-
+    immutable subCommandsList = command == "types" ? ["-l", "--limit"] :
+        command == "names" ? ["-x", "--typeID"] : [
+            "-t", "--today",
+            "-w", "--lastweek",
+            "-m", "--lastmonth",
+            "-a", "--all"
+        ];
+    
     // filter subcommand
     string filtercmd = args.length > 3 ? args[3] : "";
     if(filtercmd.canFind("=") && subCommandsList.canFind(filtercmd.split("=")[0])) {

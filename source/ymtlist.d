@@ -10,7 +10,7 @@ import std.algorithm.searching: canFind;
 
 import ymtcommon;
 
-void dbList(const string data, const string filtercmd) {
+void dbList(const string command, const string filtercmd) {
     // check if basedir exists
     if(!basedir.exists) {
         writefln("#ymt list: error! Initialize ymt first!");
@@ -32,8 +32,8 @@ void dbList(const string data, const string filtercmd) {
     // prepare a generic query
     string query = `SELECT * FROM %s`;
 
-    // retrieve data
-    if(data == "types") {
+    // retrieve command
+    if(command == "types") {
         // if we filtering is specified
         if(filtercmd.isNumeric) {
             query ~= ` ORDER BY ID `~ 
@@ -45,14 +45,14 @@ void dbList(const string data, const string filtercmd) {
         // execute query
         auto results = db.execute(query.format("Type"));
         
-        // list data
+        // list command
         writefln("%6s   %s", "ID", "Type");
         foreach(row; results) {
             auto id = row["ID"].as!uint;
             auto type = row["Type"].as!string;
             writefln("%6s   %s", id, type);
         }
-    } else if(data == "names") {
+    } else if(command == "names") {
         // if we filtering is specified
         if(filtercmd.isNumeric) {
             query ~= ` WHERE TypeID=` ~ filtercmd;
@@ -61,7 +61,7 @@ void dbList(const string data, const string filtercmd) {
         // execute query
         auto results = db.execute(query.format("Name"));
         
-        // list data
+        // list command
         writefln("%6s   %6s   %s", "ID", "TypeID", "Name");
         foreach(row; results) {
             auto id = row["ID"].as!uint;
@@ -69,7 +69,7 @@ void dbList(const string data, const string filtercmd) {
             auto name = row["Name"].as!string;
             writefln("%6s   %6s   %s", id, typeID, name);
         }
-    }  else if(data == "layout") {
+    }  else if(command == "layout") {
         writefln(
             "\n#ymt list: DB layout\n\n%s\n%s\n%s", 
             "Type:\n-------------\n| Type | ID |\n-------------\n", 
@@ -98,7 +98,7 @@ void dbList(const string data, const string filtercmd) {
         // execute query
         auto results = db.execute(query.format("Receipt"));
         
-        // list data
+        // list command
         writefln("%10s   %6s   %6s   %s", "Date", "TypeID", "NameID", "Receipt");
         foreach(row; results) {
             auto date = row["Date"].as!string;

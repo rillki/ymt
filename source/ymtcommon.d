@@ -21,7 +21,7 @@ public {
 /// Writes data to file
 void fileWrite(in string filename, in string data) {
     import std.stdio: File;
-    auto file = File(filename);
+    auto file = File(filename, "w");
     file.write(data);
     file.close();
 }

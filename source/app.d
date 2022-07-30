@@ -6,6 +6,7 @@ import std.conv: to;
 import std.array: empty;
 import std.string: format, split;
 import std.getopt: getopt, GetoptResult, defaultGetoptPrinter;
+import std.algorithm.mutation: remove;
 import std.algorithm.searching: canFind;
 
 import ymtcommon;
@@ -13,6 +14,7 @@ import ymtinit;
 import ymtadd;
 import ymtlist;
 import ymtquery;
+import ymtexport;
 
 void main(string[] args) {
     if(args.length < 2) {
@@ -225,7 +227,47 @@ void parseQuery(string[] args) {
     }
 }
 
-void parseExport(string[] args) {}
+void parseExport(string[] args) {
+    if(args.length <= 2) {
+        writefln("#ymt export: no option is specified! See \'ymt export -h\' for more info.");
+        return;
+    }
+
+    // commands
+    string type = "csv";
+    string savepath = basedir;
+
+    // parsing command line arguments
+    args = args.remove(1);
+    GetoptResult argInfo;
+    try {
+        argInfo = getopt(
+            args,
+            "type|t", "export type <csv, excel>", &type,
+            "savepath|s", "add category member", &savepath,
+        );
+    } catch(Exception e) {
+        writefln("#ymt export: error! %s", e.msg);
+        return;
+    }
+
+    // print ymt usage
+    if(argInfo.helpWanted) {
+        defaultGetoptPrinter("ymt export version %s -- add your data.".format(YMT_VERSION), argInfo.options);
+        writefln("\nEXAMPLE: ymt export --type=csv --savepath=../Desktop");
+        return;
+    }
+
+    // export data
+    if(type == "csv") {
+        dbExportCSV(savepath);
+    } else if(type == "excel") {
+        // coming soon
+        writefln("#ymt export: Coming soon!");
+    } else {
+        writefln("#ymt export: Unrecognized option %s!", type);
+    }
+}
 
 
 

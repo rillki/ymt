@@ -9,6 +9,12 @@ import std.format: format;
 import ymtcommon;
 
 void dbExportCSV(in string savepath = basedir, in char sep = ';') {
+    // check if savepath exists
+    if(!savepath.exists) {
+        writefln("#ymt export: %s does not exist!", savepath);
+        return;
+    }
+
     // get data
     auto dbData = dbGetData();
 
@@ -34,7 +40,7 @@ void dbExportCSV(in string savepath = basedir, in char sep = ';') {
 
 void dbExportExcel() {}
 
-auto dbGetData() {
+private auto dbGetData() {
     // data
     struct dbData { string[][] dbTypes, dbNames, dbReceipts; }
 
@@ -60,28 +66,28 @@ auto dbGetData() {
     immutable query = `SELECT * FROM %s`;
 
     // retreive all types
-    string[][] dbTypes;
+    string[][] dbTypes = [["ID", "Type"]];
     auto results = db.execute(query.format("Type"));
     foreach(row; results) {
-        dbTypes ~= [row["ID"].as!string, row["Type"].as!string];
+        dbTypes ~= [row[dbTypes[0][0]].as!string, row[dbTypes[0][1]].as!string];
     }
 
     // retreive all names
-    string[][] dbNames;
+    string[][] dbNames = [["ID", "TypeID", "Name"]];
     results = db.execute(query.format("Name"));
     foreach(row; results) {
-        dbNames ~= [row["ID"].as!string, row["TypeID"].as!string, row["Name"].as!string];
+        dbNames ~= [row[dbNames[0][0]].as!string, row[dbNames[0][1]].as!string, row[dbNames[0][2]].as!string];
     }
 
     // retreive all receipts
-    string[][] dbReceipts;
-    results = db.execute(query.format("Name"));
+    string[][] dbReceipts = [["Date", "TypeID", "NameID", "Receipt"]];
+    results = db.execute(query.format("Receipt"));
     foreach(row; results) {
         dbReceipts ~= [
-            row["Date"].as!string, 
-            row["TypeID"].as!string, 
-            row["NameID"].as!string,
-            row["Receipt"].as!string
+            row[dbReceipts[0][0]].as!string, 
+            row[dbReceipts[0][1]].as!string, 
+            row[dbReceipts[0][2]].as!string,
+            row[dbReceipts[0][3]].as!string
         ];
     }
 

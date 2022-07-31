@@ -75,15 +75,8 @@ private auto dbGetData() {
     // data
     struct dbData { string[][] dbTypes, dbNames, dbReceipts; }
 
-    // check if basedir exists
-    if(!basedir.exists) {
-        writefln("#ymt add: error! Initialize ymt first!");
-        return dbData();
-    }
-
-    // check if db exists
-    if(!basedir.buildPath(dbname).exists) {
-        writefln("#ymt add: error! %s does not exist, you need to initialize one!", dbname);
+    // check if basedir and db exist
+    if(!ymtIsInit("export")) {
         return dbData();
     }
 

@@ -7,15 +7,8 @@ import std.string: isNumeric;
 import std.algorithm.searching: canFind;
 
 void dbList(in string command, in string filtercmd) {
-    // check if basedir exists
-    if(!basedir.exists) {
-        writefln("#ymt list: error! Initialize ymt first!");
-        return;
-    }
-
-    // check if db exists
-    if(!basedir.buildPath(dbname).exists) {
-        writefln("#ymt: error! %s does not exist, you need to initialize one!", dbname);
+    // check if basedir and db exist
+    if(!ymtIsInit("list")) {
         return;
     }
 
@@ -98,7 +91,7 @@ void dbList(in string command, in string filtercmd) {
             auto typeID = row["TypeID"].as!uint;
             auto nameID = row["NameID"].as!string;
             auto receipt = row["Receipt"].as!long;
-            writefln("%10s   %6s   %6s   %s", date, typeID, nameID, receipt);
+            writefln("%10s   %6s   %6s   %,s", date, typeID, nameID, receipt);
         }
     }
 }

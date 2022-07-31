@@ -4,15 +4,8 @@ import ymtcommon;
 import std.format: format;
 
 void dbAddType(in string type) {
-    // check if basedir exists
-    if(!basedir.exists) {
-        writefln("#ymt add: error! Initialize ymt first!");
-        return;
-    }
-
-    // check if db exists
-    if(!basedir.buildPath(dbname).exists) {
-        writefln("#ymt add: error! %s does not exist, you need to initialize one!", dbname);
+    // check if basedir and db exist
+    if(!ymtIsInit("add")) {
         return;
     }
 
@@ -33,15 +26,8 @@ void dbAddType(in string type) {
 }
 
 void dbAddName(in string name, in uint typeID) {
-    // check if basedir exists
-    if(!basedir.exists) {
-        writefln("#ymt add: error! Initialize ymt first!");
-        return;
-    }
-
-    // check if db exists
-    if(!basedir.buildPath(dbname).exists) {
-        writefln("#ymt add: error! %s does not exist, you need to initialize one!", dbname);
+    // check if basedir and db exist
+    if(!ymtIsInit("add")) {
         return;
     }
 
@@ -62,15 +48,8 @@ void dbAddName(in string name, in uint typeID) {
 }
 
 void dbAddReceipt(in float receipt, in uint nameID, in uint typeID) {
-    // check if basedir exists
-    if(!basedir.exists) {
-        writefln("#ymt add: error! Initialize ymt first!");
-        return;
-    }
-
-    // check if db exists
-    if(!basedir.buildPath(dbname).exists) {
-        writefln("#ymt add: error! %s does not exist, you need to initialize one!", dbname);
+    // check if basedir and db exist
+    if(!ymtIsInit("add")) {
         return;
     }
 

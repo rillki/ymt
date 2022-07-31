@@ -70,6 +70,12 @@ void dbRemove(in string dbname) {
         return;
     }
 
+    // check if basedir exists
+    if(!basedir.exists) {
+        writefln("#ymt remove: error! Initialize ymt first!");
+        return;
+    }
+
     // remove db
     basedir.buildPath(dbname).remove;
 
@@ -86,6 +92,12 @@ void dbRemove(in string dbname) {
 void dbSwitch(in string dbname) {
     if(dbname is null) {
         writefln("#ymt switch: dbname not provided! See \'ymt -h\' for more info!", dbname);
+        return;
+    }
+
+    // check if basedir exists
+    if(!basedir.exists) {
+        writefln("#ymt switch: error! Initialize ymt first!");
         return;
     }
 

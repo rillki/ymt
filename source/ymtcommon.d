@@ -19,6 +19,22 @@ public {
             dbname = basedir.exists ? basedir.buildPath(configFile).readText : "";
         }
     }
+
+    bool ymtIsInit(in string cmd) {
+        // check if basedir exists
+        if(!basedir.exists) {
+            writefln("#ymt %s: error! Initialize ymt first!", cmd);
+            return false;
+        }
+
+        // check if db exists
+        if(!basedir.buildPath(dbname).exists) {
+            writefln("#ymt %s: error! %s does not exist, you need to initialize one!", cmd, dbname);
+            return false;
+        }
+
+        return true;
+    }
 }
 
 /// Writes data to file

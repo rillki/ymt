@@ -15,6 +15,7 @@ import ymtadd;
 import ymtlist;
 import ymtquery;
 import ymtexport;
+import ymtdescribe;
 
 void main(string[] args) {
     if(args.length < 2) {
@@ -55,6 +56,10 @@ void main(string[] args) {
         case "export":
             parseExport(args);
             break;
+        case "d":
+        case "describe":
+            parseDescribe(args);
+            break;
         case "c":
         case "clean":
             dbClean();
@@ -68,16 +73,17 @@ void main(string[] args) {
         case "h":
         case "help":
             writefln("ymt version %s - Your Money Tracker.", YMT_VERSION);
-            writefln("i    init <dbname>  initializes a new database");
-            writefln("r  remove <dbname>  removes an existing database");
-            writefln("s  switch <dbname>  switches to the specified database");
-            writefln("a     add [OPTIONS] use -h to read the usage manual on adding data");
-            writefln("l    list [OPTIONS] use -h to read the usage manual on listing data");
-            writefln("q   query [OPTIONS] use -h to read the usage manual on querying data");
-            writefln("e  export [OPTIONS] use -h to read the usage manual on exporting data");
-            writefln("c   clean           delete all data");
-            writefln("v version           display current version");
-            writefln("h    help           this help manual\n");
+            writefln("i     init <dbname>  initializes a new database");
+            writefln("r   remove <dbname>  removes an existing database");
+            writefln("s   switch <dbname>  switches to the specified database");
+            writefln("a      add [OPTIONS] use -h to read the usage manual on adding data");
+            writefln("l     list [OPTIONS] use -h to read the usage manual on listing data");
+            writefln("q    query [OPTIONS] use -h to read the usage manual on querying data");
+            writefln("e   export [OPTIONS] use -h to read the usage manual on exporting data");
+            writefln("d describe [OPTIONS] use -h to read the usage manual on getting summary output");
+            writefln("c    clean           delete all data");
+            writefln("v  version           display current version");
+            writefln("h     help           this help manual\n");
             writefln("EXAMPLE: ymt init crow.db");
             break;
         default:
@@ -270,6 +276,43 @@ void parseExport(string[] args) {
 
     // done
     writefln("#ymt export: data saved as %s file to %s", type.toUpper, savepath);
+}
+
+void parseDescribe(string[] args) {
+    if(args.length <= 2) {
+        writefln("#ymt describe: no option is specified! See \'ymt describe -h\' for more info.");
+        return;
+    }
+
+    // commands
+    int period = 7;
+    bool detailed = false;
+    bool descending = false;
+
+    // parsing command line arguments
+    args = args.remove(1);
+    GetoptResult argInfo;
+    try {
+        argInfo = getopt(
+            args,
+            "period|p", "time period in days", &period,
+            "detailed|d", "detailed report (default: false)", &detailed,
+            "desc", "descending order (default: false)", &descending,
+        );
+    } catch(Exception e) {
+        writefln("#ymt describe: error! %s", e.msg);
+        return;
+    }
+
+    // print ymt usage
+    if(argInfo.helpWanted) {
+        defaultGetoptPrinter("ymt describe version %s -- describe data.".format(YMT_VERSION), argInfo.options);
+        writefln("\nEXAMPLE: ymt describe --period=30 --detailed --desc");
+        return;
+    }
+
+    // describe data
+    dbDescribe(period, detailed, descending);
 }
 
 

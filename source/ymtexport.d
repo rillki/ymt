@@ -71,7 +71,7 @@ void dbExportExcel(in string savepath = basedir) {
     arr2excel(workbook, sheet_dbReceipts, dbData.dbReceipts);
 }
 
-private auto dbGetData() {
+auto dbGetData() {
     // data
     struct dbData { string[][] dbTypes, dbNames, dbReceipts; }
 

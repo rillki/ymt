@@ -16,6 +16,8 @@ import ymtlist;
 import ymtquery;
 import ymtexport;
 import ymtdescribe;
+import ymtplot;
+
 
 void main(string[] args) {
     if(args.length < 2) {
@@ -60,6 +62,10 @@ void main(string[] args) {
         case "describe":
             parseDescribe(args);
             break;
+        case "p":
+        case "plot":
+            parsePlot(args);
+            break;
         case "c":
         case "clean":
             dbClean();
@@ -81,6 +87,7 @@ void main(string[] args) {
             writefln("q    query [OPTIONS] use -h to read the usage manual on querying data");
             writefln("e   export [OPTIONS] use -h to read the usage manual on exporting data");
             writefln("d describe [OPTIONS] use -h to read the usage manual on getting summary output");
+            writefln("p     plot [OPTIONS] use -h to read the usage manual on plotting data");
             writefln("c    clean           delete all data");
             writefln("v  version           display current version");
             writefln("h     help           this help manual\n");
@@ -315,6 +322,8 @@ void parseDescribe(string[] args) {
     dbDescribe(period, detailed, descending);
 }
 
-
+void parsePlot(string[] args) {
+    writefln("ymt plot: coming soon!");
+}
 
 

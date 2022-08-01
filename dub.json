@@ -5,6 +5,7 @@
 	"copyright": "Copyright © 2022, rillki",
 	"dependencies": {
 		"d2sqlite3": "~>1.0.0",
+		"matplotlib-d": "~>0.1.7",
 		"xlsxd": "~>4.0.2"
 	},
 	"description": "YMT - Your Money Tracker",

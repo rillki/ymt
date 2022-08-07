@@ -3,6 +3,8 @@ module app;
 
 import std.stdio: writefln;
 import std.conv: to;
+import std.file: getcwd;
+import std.path: dirName;
 import std.array: empty;
 import std.string: format, split, toUpper;
 import std.getopt: getopt, GetoptResult, defaultGetoptPrinter;
@@ -330,10 +332,11 @@ void parsePlot(string[] args) {
 
     // commands
     int period = 7;
-    string by = "type";
-    bool daily = true, 
+    bool daily = false, 
          montly = false,
          yearly = false;
+    string plotType = "bar",
+           savepath = basedir.buildPath("plot.png");
 
     // parsing command line arguments
     args = args.remove(1);
@@ -342,10 +345,11 @@ void parsePlot(string[] args) {
         argInfo = getopt(
             args,
             "period|p", "time period in days (if -1 is specified, all data is taken)", &period,
-            "by|b", "group data by <type, name>", &by,
+            "plt", "plot type <bar, barh, line>", &plotType,
             "daily|d", "group data on a daily basis", &daily,
             "monthly|m", "group data a monthly basis", &montly,
             "yearly|y", "group data on a yearly basis", &yearly,
+            "save|s", "save path with plot name (default: <ymt savedir>/plot.png)", &savepath,
         );
     } catch(Exception e) {
         writefln("#ymt plot: error! %s", e.msg);
@@ -355,12 +359,19 @@ void parsePlot(string[] args) {
     // print ymt usage
     if(argInfo.helpWanted) {
         defaultGetoptPrinter("ymt plot version %s -- describe data.".format(YMT_VERSION), argInfo.options);
-        writefln("\nEXAMPLE: ymt plot --period=30 --by=type --daily");
+        writefln("\nEXAMPLE: ymt plot --plt=line --period=30 --by=type --daily");
+        return;
+    }
+
+    // check if savepath exists
+    immutable spath = savepath.canFind("~") ? savepath.expandTilde : getcwd.buildPath(savepath);
+    if(!spath.dirName.exists) {
+        writefln("#ymt plot: save path <%s> does not exist!", savepath);
         return;
     }
 
     // plot data
-    dbPlot(period, by, [daily, montly, yearly]);
+    dbPlot(period, plotType, [daily, montly, yearly], spath);
 }
 
 

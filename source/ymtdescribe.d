@@ -17,14 +17,14 @@ void dbDescribe(in int period, in bool detailed, in bool descending) {
     // summary query
     immutable querySummary = `
         SELECT t.Type, SUM(r.Receipt) as s FROM Receipt r
-            LEFT OUTER JOIN Type t on t.ID=r.TypeID ` ~ 
-            (period < 0 
-            ? "" 
-            : period == 0 
-            ? `WHERE r.date=CURRENT_DATE ` 
-            : `WHERE r.date>=strftime('%Y-%m-%d', datetime('now','-` 
-            ~ `%s day')) AND r.date<=CURRENT_DATE `.format(period)) 
-            ~ `GROUP BY t.Type ORDER BY s ` ~ (descending ? "DESC" : "ASC");
+        LEFT OUTER JOIN Type t on t.ID=r.TypeID ` ~ 
+        (period < 0 
+        ? "" 
+        : period == 0 
+        ? `WHERE r.date=CURRENT_DATE ` 
+        : `WHERE r.date>=strftime('%Y-%m-%d', datetime('now','-` 
+        ~ `%s day')) AND r.date<=CURRENT_DATE `.format(period)) 
+        ~ `GROUP BY t.Type ORDER BY s ` ~ (descending ? "DESC" : "ASC");
     
     // query max/min/avg receipt value
     immutable queryDetails = 

@@ -331,7 +331,8 @@ void parsePlot(string[] args) {
     }
 
     // commands
-    int period = 7;
+    int period = 7,
+        typeID = -1;
     bool daily = false, 
          montly = false,
          yearly = false;
@@ -346,6 +347,7 @@ void parsePlot(string[] args) {
             args,
             "period|p", "time period in days (if -1 is specified, all data is taken)", &period,
             "plt", "plot type <bar, barh, line>", &plotType,
+            "typeID|x", "filter using type id", &typeID,
             "daily|d", "group data on a daily basis", &daily,
             "monthly|m", "group data a monthly basis", &montly,
             "yearly|y", "group data on a yearly basis", &yearly,
@@ -371,7 +373,7 @@ void parsePlot(string[] args) {
     }
 
     // plot data
-    dbPlot(period, plotType, [daily, montly, yearly], spath);
+    dbPlot(period, typeID, plotType, [daily, montly, yearly], spath);
 }
 
 

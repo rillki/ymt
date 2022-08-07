@@ -34,7 +34,7 @@ void dbList(in string command, in string filtercmd) {
         // list command
         writefln("%6s   %s", "ID", "Type");
         foreach(row; results) {
-            auto id = row["ID"].as!uint;
+            auto id = row["ID"].as!string;
             auto type = row["Type"].as!string;
             writefln("%6s   %s", id, type);
         }
@@ -50,8 +50,8 @@ void dbList(in string command, in string filtercmd) {
         // list command
         writefln("%6s   %6s   %s", "ID", "TypeID", "Name");
         foreach(row; results) {
-            auto id = row["ID"].as!uint;
-            auto typeID = row["TypeID"].as!uint;
+            auto id = row["ID"].as!string;
+            auto typeID = row["TypeID"].as!string;
             auto name = row["Name"].as!string;
             writefln("%6s   %6s   %s", id, typeID, name);
         }
@@ -90,10 +90,10 @@ void dbList(in string command, in string filtercmd) {
         writefln("%10s   %6s   %6s   %s", "Date", "TypeID", "NameID", "Receipt");
         foreach(row; results) {
             auto date = row["Date"].as!string;
-            auto typeID = row["TypeID"].as!uint;
+            auto typeID = row["TypeID"].as!string;
             auto nameID = row["NameID"].as!string;
-            auto receipt = row["Receipt"].as!long;
-            writefln("%10s   %6s   %6s   %,s", date, typeID, nameID, receipt);
+            auto receipt = row["Receipt"].as!double;
+            writefln("%10s   %6s   %6s   %.1,f", date, typeID, nameID, receipt);
         }
     }
 }

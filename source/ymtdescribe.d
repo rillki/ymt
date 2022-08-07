@@ -63,7 +63,7 @@ void dbDescribe(in int period, in bool detailed, in bool descending) {
         overallSpent += receipt;
 
         // output results
-        writefln("%14,s   %s", receipt, (type.empty ? "N/A" : type));
+        writefln("%14.1,f   %s", receipt, (type.empty ? "N/A" : type));
     }
 
     // summary
@@ -75,15 +75,15 @@ void dbDescribe(in int period, in bool detailed, in bool descending) {
         foreach(row; results) {
             // get data
             auto type = row.peek!string(0);
-            auto value = "%.2f".format(row.peek!double(1));
+            auto value = "%.1,f".format(row.peek!double(1));
             auto operation = row.peek!string(2);
 
             // display results
-            writefln("%14,s   %s (%s)", value, operation, (operation == "AVG" ? "" : type));
+            writefln("%14s   %s (%s)", value, operation, (operation == "AVG" ? "" : type));
         }
     }
 
     // output overall spent
     results = db.execute(queryCountPurchases);
-    writefln("%14,s   OVERALL (%s purchases)", overallSpent, results.oneValue!string);
+    writefln("%14.1,f   OVERALL (%s purchases)", overallSpent, results.oneValue!string);
 }

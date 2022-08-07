@@ -22,8 +22,9 @@ void dbDescribe(in int period, in bool detailed, in bool descending) {
             ? "" 
             : period == 0 
             ? `WHERE r.date=CURRENT_DATE ` 
-            : `WHERE r.date>=CURRENT_DATE-%s AND r.date<=CURRENT_DATE `.format(period)) ~
-        `GROUP BY t.Type ORDER BY s ` ~ (descending ? "DESC" : "ASC");
+            : `WHERE r.date>=strftime('%Y-%m-%d', datetime('now','-` 
+            ~ `%s day')) AND r.date<=CURRENT_DATE `.format(period)) 
+            ~ `GROUP BY t.Type ORDER BY s ` ~ (descending ? "DESC" : "ASC");
     
     // query max/min/avg receipt value
     immutable queryDetails = 
@@ -42,8 +43,9 @@ void dbDescribe(in int period, in bool detailed, in bool descending) {
             (period < 0 
             ? "" 
             : period == 0 
-            ? `WHERE date=CURRENT_DATE ` 
-            : `WHERE date>=CURRENT_DATE-%s AND date<=CURRENT_DATE `.format(period));
+            ? `WHERE date=CURRENT_DATE `
+            : `WHERE date>=strftime('%Y-%m-%d', datetime('now','-` 
+            ~ `%s day')) AND date<=CURRENT_DATE `.format(period));
 
     // execute query
     auto results = db.execute(querySummary);

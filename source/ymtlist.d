@@ -63,6 +63,8 @@ void dbList(in string command, in string filtercmd) {
             "Receipt:\n------------------------------------\n| Date | TypeID | NameID | Receipt |\n------------------------------------\n"
         );
     } else {
+        // init query
+        query = query.format("Receipt");
         // if filtering is specified
         switch(filtercmd) {
             case "-t":
@@ -71,18 +73,18 @@ void dbList(in string command, in string filtercmd) {
                 break;
             case "-w":
             case "--lastweek":
-                query ~= ` WHERE date<=CURRENT_DATE AND date>=CURRENT_DATE-6`;
+                query ~= ` WHERE date>strftime('%Y-%m-%d', datetime('now','-7 day')) AND date<=CURRENT_DATE`;
                 break;
             case "-m":
             case "--lastmonth":
-                query ~= ` WHERE date<=CURRENT_DATE AND date>=CURRENT_DATE-30`;
+                query ~= ` WHERE date>strftime('%Y-%m-%d', datetime('now','-30 day')) AND date<=CURRENT_DATE`;
                 break;
             default:
                 break;
         }
 
         // execute query
-        auto results = db.execute(query.format("Receipt"));
+        auto results = db.execute(query);
         
         // list command
         writefln("%10s   %6s   %6s   %s", "Date", "TypeID", "NameID", "Receipt");

@@ -74,7 +74,7 @@ void main(string[] args) {
         case "version":
             import std.compiler: version_major, version_minor;
             writefln("ymt version %s - Your Money Tracker.", YMT_VERSION);
-            writefln("Built with %s v%s.%s on %s", __VENDOR__, version_major, version_minor, __TIMESTAMP__);
+            writefln("Built with %s v%s.%s on %s", __VENDOR__, version_major, version_minor, __DATE__);
             break;
         case "h":
         case "help":
@@ -323,7 +323,44 @@ void parseDescribe(string[] args) {
 }
 
 void parsePlot(string[] args) {
-    writefln("ymt plot: coming soon!");
+    if(args.length <= 2) {
+        writefln("#ymt plot: no option is specified! See \'ymt plot -h\' for more info.");
+        return;
+    }
+
+    // commands
+    int period = 7;
+    string by = "type";
+    bool daily = true, 
+         montly = false,
+         yearly = false;
+
+    // parsing command line arguments
+    args = args.remove(1);
+    GetoptResult argInfo;
+    try {
+        argInfo = getopt(
+            args,
+            "period|p", "time period in days (if -1 is specified, all data is taken)", &period,
+            "by|b", "group data by <type, name>", &by,
+            "daily|d", "group data on a daily basis", &daily,
+            "monthly|m", "group data a monthly basis", &montly,
+            "yearly|y", "group data on a yearly basis", &yearly,
+        );
+    } catch(Exception e) {
+        writefln("#ymt plot: error! %s", e.msg);
+        return;
+    }
+
+    // print ymt usage
+    if(argInfo.helpWanted) {
+        defaultGetoptPrinter("ymt plot version %s -- describe data.".format(YMT_VERSION), argInfo.options);
+        writefln("\nEXAMPLE: ymt plot --period=30 --by=type --daily");
+        return;
+    }
+
+    // plot data
+    dbPlot(period, by, [daily, montly, yearly]);
 }
 
 

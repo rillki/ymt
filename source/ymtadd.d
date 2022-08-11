@@ -1,7 +1,9 @@
 module ymtadd;
 
 import ymtcommon;
+import std.array: empty;
 import std.format: format;
+import std.datetime.date: Date;
 
 void dbAddType(in string type) {
     // check if basedir and db exist
@@ -47,10 +49,17 @@ void dbAddName(in string name, in uint typeID) {
     }
 }
 
-void dbAddReceipt(in float receipt, in uint nameID, in uint typeID) {
+void dbAddReceipt(in float receipt, in uint nameID, in uint typeID, in string date) {
     // check if basedir and db exist
     if(!ymtIsInit("add")) {
         return;
+    }
+
+    // check if date specified is in correct format
+    try {
+        auto tmp = Date.fromISOExtString(date);
+    } catch(Exception e) {
+        writefln("#ymt add: %s", e.msg);
     }
 
     // open db
@@ -58,12 +67,13 @@ void dbAddReceipt(in float receipt, in uint nameID, in uint typeID) {
 
     // prepare a query
     immutable query = `
-        INSERT INTO Receipt (Date, NameID, TypeID, Receipt) VALUES (CURRENT_DATE, %s, %s, %s)
+        INSERT INTO Receipt (Date, NameID, TypeID, Receipt) 
+        VALUES (%s, %s, %s, %s)
     `;
 
     // add a new entry to database
     try {
-        db.run(query.format(nameID, typeID, receipt));
+        db.run(query.format((date.empty ? "CURRENT_DATE" : "\"" ~ date ~ "\""), nameID, typeID, receipt));
     } catch(Exception e) {
         writefln("#ymt add: %s", e.msg);
     }

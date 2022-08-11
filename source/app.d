@@ -111,7 +111,8 @@ void parseAdd(string[] args) {
     // commands
     string 
         type = null,
-        name = null;
+        name = null,
+        date = null;
     uint 
         typeID = 0, 
         nameID = 0;
@@ -127,6 +128,7 @@ void parseAdd(string[] args) {
             "typeID|x", "category ID", &typeID,
             "nameID|z", "category member ID", &nameID,
             "receipt|r", "add receipt", &receipt,
+            "date|d", "specify date Y-m-d", &date,
         );
     } catch(Exception e) {
         writefln("#ymt add: error! %s", e.msg);
@@ -138,7 +140,7 @@ void parseAdd(string[] args) {
         defaultGetoptPrinter("ymt add version %s -- add your data.".format(YMT_VERSION), argInfo.options);
         writefln("\nEXAMPLE: ymt add --type=Dairy");
         writefln("         ymt add --name Milk --typeID 1");
-        writefln("         ymt add --receipt 523.2 --typeID 1 --nameID 1");
+        writefln("         ymt add --receipt 523.2 --typeID 1 --nameID 1 --date 2022-08-07");
         return;
     }
 
@@ -147,7 +149,7 @@ void parseAdd(string[] args) {
     } else if(name !is null) {
         dbAddName(name, typeID);
     } else {
-        dbAddReceipt(receipt, nameID, typeID);
+        dbAddReceipt(receipt, nameID, typeID, date);
     }
 }
 
@@ -159,9 +161,14 @@ void parseList(string[] args) {
     }
 
     // list command
-    immutable command = args[2];
-    immutable subCommandsList = command == "types" ? ["-l", "--limit"] :
-        command == "names" ? ["-x", "--typeID"] : [
+    immutable command = args[2] == "t" ? "types" 
+        : args[2] == "n" ? "names" 
+        : args[2] == "r" ? "receipts" 
+        : args[2] == "l" ? "layout" 
+        : args[2] == "s" ? "savedir"
+        : args[2]; 
+    immutable subCommandsList = (command == "types" || command == "t") ? ["-l", "--limit"] :
+        (command == "names" || command == "n") ? ["-x", "--typeID"] : [
             "-t", "--today",
             "-w", "--lastweek",
             "-m", "--lastmonth",
@@ -185,17 +192,17 @@ void parseList(string[] args) {
         case "--help":
             writefln("ymt list version %s -- list database data.", YMT_VERSION);
             writefln("OPTIONS:");
-            writefln("   types list available categories");
-            writefln("         -l --limit list last N rows");
-            writefln("   names list names within those categories");
-            writefln("         -x --typeID filter using type id");
-            writefln("receipts list receipt data");
-            writefln("         -t     --today list data added today");
-            writefln("         -w  --lastweek list data for past 7 days");
-            writefln("         -m --lastmonth list data for past 30 days");
-            writefln("         -a       --all list all available data");
-            writefln("  layout show database table layout");
-            writefln(" savedir show YMT save directory\n");
+            writefln("t    types list available categories");
+            writefln("           -l --limit list last N rows");
+            writefln("n    names list names within those categories");
+            writefln("           -x --typeID filter using type id");
+            writefln("r receipts list receipt data");
+            writefln("           -t     --today list data added today");
+            writefln("           -w  --lastweek list data for past 7 days");
+            writefln("           -m --lastmonth list data for past 30 days");
+            writefln("           -a       --all list all available data");
+            writefln("l   layout show database table layout");
+            writefln("s  savedir show YMT save directory\n");
             writefln("EXAMPLE: ymt list [OPTIONS]");
             break;
         case "types":

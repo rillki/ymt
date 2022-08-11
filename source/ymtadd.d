@@ -55,6 +55,12 @@ void dbAddReceipt(in float receipt, in uint nameID, in uint typeID, in string da
         return;
     }
 
+    // check if receipt is not 0
+    if(receipt == 0) {
+        writefln("#ymt add: receipt value cannot be 0!");
+        return;
+    }
+
     // check if date specified is in correct format
     try {
         auto tmp = Date.fromISOExtString(date);

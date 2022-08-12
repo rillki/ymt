@@ -5,6 +5,7 @@ public {
     import std.stdio: writefln;
     import std.path: expandTilde, buildPath;
     import std.file: readText, exists;
+    import std.process: env = environment;
 
     enum YMT_VERSION = "0.1";
     enum configFile = "ymt.config";
@@ -13,11 +14,12 @@ public {
     string dbname;
     static this() {
         version(Windows) {
-            //
+            basedir = env.get("HOMEPATH", "PUBLIC").buildPath(".ymt");
         } else {
-            basedir = "~/.ymt".expandTilde;
-            dbname = basedir.exists ? basedir.buildPath(configFile).readText : "";
+            basedir = env.get("HOME", "~".expandTilde).buildPath(".ymt");
         }
+
+        dbname = basedir.exists ? basedir.buildPath(configFile).readText : "";
     }
 
     bool ymtIsInit(in string cmd) {

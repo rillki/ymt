@@ -1,41 +1,44 @@
 {
-	"authors": [
-		"rillki"
-	],
-	"copyright": "Copyright © 2022, rillki",
-	"dependencies": {
-		"d2sqlite3": "~>1.0.0",
-		"matplotlib-d": "~>0.1.7",
-		"xlsxd": "~>4.0.2"
-	},
-	"description": "YMT - Your Money Tracker",
-	"configurations": [
-		{
-			"name": "ymt",
-			"platforms": ["osx"],
-			"targetType": "executable",
-			"lflags": [
-				"-L/usr/local/Cellar/sqlite/3.38.0/lib/"
-			],
-		},
-		{
-			"name": "ymt",
-			"platforms": ["linux"],
-			"targetType": "executable",
-			"lflags": [
-				"-L/usr/lib/"
-			],
-		},
-		{
-			"name": "ymt",
-			"platforms": ["windows"],
-			"targetType": "executable",
-			"libs": [
-				"sqlite3"
-			],
-		},
-	],
-	"license": "MIT",
-	"name": "ymt",
-	"targetPath": "bin"
+    "authors": [
+        "rillki"
+    ],
+    "copyright": "Copyright © 2022, rillki",
+    "dependencies": {
+        "d2sqlite3": "~>1.0.0",
+        "matplotlib-d": "~>0.1.7",
+        "xlsxd": "~>4.0.2"
+    },
+    "description": "YMT - Your Money Tracker",
+    "configurations": [
+        {
+            "name": "ymt",
+            "platforms": ["osx"],
+            "targetType": "executable",
+            "lflags": [
+                "-L/usr/local/Cellar/sqlite/3.38.0/lib/"
+            ]
+        },
+        {
+            "name": "ymt",
+            "platforms": ["linux"],
+            "targetType": "executable",
+            "lflags": [
+                "-L/usr/lib/"
+            ]
+        },
+        {
+            "name": "ymt",
+            "platforms": ["windows"],
+            "targetType": "executable",
+            "libs": [
+                "sqlite3"
+            ],
+            "preBuildCommands": [
+                "C:\\ProgramData\\Anaconda3\\python.exe $PACKAGE_DIR/python/prebuild.py $PACKAGE_DIR"
+            ]
+        }
+    ],
+    "license": "MIT",
+    "name": "ymt",
+    "targetPath": "bin"
 }

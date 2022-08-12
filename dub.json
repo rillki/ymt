@@ -9,8 +9,31 @@
 		"xlsxd": "~>4.0.2"
 	},
 	"description": "YMT - Your Money Tracker",
-	"lflags": [
-		"-L/usr/local/Cellar/sqlite/3.38.0/lib/"
+	"configurations": [
+		{
+			"name": "ymt",
+			"platforms": ["osx"],
+			"targetType": "executable",
+			"lflags": [
+				"-L/usr/local/Cellar/sqlite/3.38.0/lib/"
+			],
+		},
+		{
+			"name": "ymt",
+			"platforms": ["linux"],
+			"targetType": "executable",
+			"lflags": [
+				"-L/usr/lib/"
+			],
+		},
+		{
+			"name": "ymt",
+			"platforms": ["windows"],
+			"targetType": "executable",
+			"libs": [
+				"sqlite3"
+			],
+		},
 	],
 	"license": "MIT",
 	"name": "ymt",

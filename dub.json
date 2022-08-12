@@ -22,9 +22,7 @@
             "name": "ymt-linux",
             "platforms": ["linux"],
             "targetType": "executable",
-            "lflags": [
-                "-L/usr/lib/"
-            ]
+            "libs": ["sqlite3"]
         }
     ],
     "license": "MIT",

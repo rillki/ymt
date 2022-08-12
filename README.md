@@ -1,6 +1,6 @@
 <img src="imgs/money.png" width="64" height="64" align="left"></img>
 # YTM
-Your Money Tracker - a simple command line accounting utility. (Precompiled)[] binaries available.
+Your Money Tracker - a simple command line accounting utility. Download [precompiled](https://github.com/rillki/ymt/releases) binaries.
 
 ### Features
 ```
@@ -37,7 +37,7 @@ dub build --build=release
 
 Your will find the binary in the `bin/` folder.
 
-Currently only macOS and Linux platforms have a build configuration. My Windows build configuration fails to build the utility. Try to build it yourself and please report back upon success!!! Read more (here)[https://github.com/koji-kojiro/matplotlib-d].
+Currently only macOS and Linux platforms have a build configuration. My Windows build configuration fails to build the utility. Try to build it yourself and please report back upon success!!! Read more [here](https://github.com/koji-kojiro/matplotlib-d).
 
 ### LICENSE
 All code is licensed under the MIT license.

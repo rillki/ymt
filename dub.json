@@ -11,7 +11,7 @@
     "description": "YMT - Your Money Tracker",
     "configurations": [
         {
-            "name": "ymt",
+            "name": "ymt-osx",
             "platforms": ["osx"],
             "targetType": "executable",
             "lflags": [
@@ -19,22 +19,11 @@
             ]
         },
         {
-            "name": "ymt",
+            "name": "ymt-linux",
             "platforms": ["linux"],
             "targetType": "executable",
             "lflags": [
                 "-L/usr/lib/"
-            ]
-        },
-        {
-            "name": "ymt",
-            "platforms": ["windows"],
-            "targetType": "executable",
-            "libs": [
-                "sqlite3"
-            ],
-            "preBuildCommands": [
-                "C:\\ProgramData\\Anaconda3\\python.exe $PACKAGE_DIR/python/prebuild.py $PACKAGE_DIR"
             ]
         }
     ],

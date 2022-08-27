@@ -62,10 +62,13 @@ void dbAddReceipt(in float receipt, in uint nameID, in uint typeID, in string da
     }
 
     // check if date specified is in correct format
-    try {
-        auto tmp = Date.fromISOExtString(date);
-    } catch(Exception e) {
-        writefln("#ymt add: %s", e.msg);
+    if(!date.empty) {
+        try {
+            auto tmp = Date.fromISOExtString(date);
+        } catch(Exception e) {
+            writefln("#ymt add: %s", e.msg);
+            return;
+        }
     }
 
     // open db

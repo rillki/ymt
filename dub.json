@@ -15,7 +15,7 @@
             "platforms": ["osx"],
             "targetType": "executable",
             "lflags": [
-                "-L/usr/local/Cellar/sqlite/3.38.0/lib/"
+                "-L./libs/osx"
             ]
         },
         {

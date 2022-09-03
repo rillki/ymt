@@ -16,10 +16,16 @@ import ymtinit;
 import ymtadd;
 import ymtlist;
 import ymtquery;
-import ymtexport;
 import ymtdescribe;
-import ymtplot;
 
+/*
+    Plotting and db export is only available under LINUX and MACOS systems.
+    I encountered errors when building matplotlib and xlsxwriter on my Windows machine.
+*/
+version(Windows) {} else {
+    import ymtexport;
+    import ymtplot;
+}
 
 void main(string[] args) {
     if(args.length < 2) {
@@ -56,18 +62,20 @@ void main(string[] args) {
         case "query":
             parseQuery(args);
             break;
-        case "e":
-        case "export":
-            parseExport(args);
-            break;
         case "d":
         case "describe":
             parseDescribe(args);
             break;
-        case "p":
-        case "plot":
-            parsePlot(args);
-            break;
+        version(Windows) {} else {
+            case "e":
+            case "export":
+                parseExport(args);
+                break;
+            case "p":
+            case "plot":
+                parsePlot(args);
+                break;
+        }
         case "c":
         case "clean":
             dbClean();
@@ -87,9 +95,11 @@ void main(string[] args) {
             writefln("a      add [OPTIONS] use -h to read the usage manual on adding data");
             writefln("l     list [OPTIONS] use -h to read the usage manual on listing data");
             writefln("q    query [OPTIONS] use -h to read the usage manual on querying data");
-            writefln("e   export [OPTIONS] use -h to read the usage manual on exporting data");
             writefln("d describe [OPTIONS] use -h to read the usage manual on getting summary output");
-            writefln("p     plot [OPTIONS] use -h to read the usage manual on plotting data");
+            version(Windows) {} else {
+                writefln("e   export [OPTIONS] use -h to read the usage manual on exporting data");
+                writefln("p     plot [OPTIONS] use -h to read the usage manual on plotting data");
+            }
             writefln("c    clean           delete all data");
             writefln("v  version           display current version");
             writefln("h     help           this help manual\n");
@@ -249,51 +259,6 @@ void parseQuery(string[] args) {
     }
 }
 
-void parseExport(string[] args) {
-    if(args.length <= 2) {
-        writefln("#ymt export: no option is specified! See \'ymt export -h\' for more info.");
-        return;
-    }
-
-    // commands
-    string type = "csv";
-    string savepath = basedir;
-
-    // parsing command line arguments
-    args = args.remove(1);
-    GetoptResult argInfo;
-    try {
-        argInfo = getopt(
-            args,
-            "type|t", "export type <csv, excel>", &type,
-            "savepath|s", "add category member", &savepath,
-        );
-    } catch(Exception e) {
-        writefln("#ymt export: error! %s", e.msg);
-        return;
-    }
-
-    // print ymt usage
-    if(argInfo.helpWanted) {
-        defaultGetoptPrinter("ymt export version %s -- add your data.".format(YMT_VERSION), argInfo.options);
-        writefln("\nEXAMPLE: ymt export --type=csv --savepath=../Desktop");
-        return;
-    }
-
-    // export data
-    if(type == "csv") {
-        dbExportCSV(savepath);
-    } else if(type == "excel") {
-        dbExportExcel(savepath);
-    } else {
-        writefln("#ymt export: Unrecognized option %s!", type);
-        return;
-    }
-
-    // done
-    writefln("#ymt export: data saved as %s file to %s", type.toUpper, savepath);
-}
-
 void parseDescribe(string[] args) {
     if(args.length <= 2) {
         writefln("#ymt describe: no option is specified! See \'ymt describe -h\' for more info.");
@@ -331,56 +296,103 @@ void parseDescribe(string[] args) {
     dbDescribe(period, detailed, descending);
 }
 
-void parsePlot(string[] args) {
-    if(args.length <= 2) {
-        writefln("#ymt plot: no option is specified! See \'ymt plot -h\' for more info.");
-        return;
+version(Windows) {} else {
+    void parseExport(string[] args) {
+        if(args.length <= 2) {
+            writefln("#ymt export: no option is specified! See \'ymt export -h\' for more info.");
+            return;
+        }
+
+        // commands
+        string type = "csv";
+        string savepath = basedir;
+
+        // parsing command line arguments
+        args = args.remove(1);
+        GetoptResult argInfo;
+        try {
+            argInfo = getopt(
+                args,
+                "type|t", "export type <csv, excel>", &type,
+                "savepath|s", "add category member", &savepath,
+            );
+        } catch(Exception e) {
+            writefln("#ymt export: error! %s", e.msg);
+            return;
+        }
+
+        // print ymt usage
+        if(argInfo.helpWanted) {
+            defaultGetoptPrinter("ymt export version %s -- add your data.".format(YMT_VERSION), argInfo.options);
+            writefln("\nEXAMPLE: ymt export --type=csv --savepath=../Desktop");
+            return;
+        }
+
+        // export data
+        if(type == "csv") {
+            dbExportCSV(savepath);
+        } else if(type == "excel") {
+            dbExportExcel(savepath);
+        } else {
+            writefln("#ymt export: Unrecognized option %s!", type);
+            return;
+        }
+
+        // done
+        writefln("#ymt export: data saved as %s file to %s", type.toUpper, savepath);
     }
 
-    // commands
-    int period = 7,
-        typeID = -1;
-    bool daily = false, 
-         montly = false,
-         yearly = false;
-    string plotType = "bar",
-           savepath = basedir.buildPath("plot.png");
+    void parsePlot(string[] args) {
+        if(args.length <= 2) {
+            writefln("#ymt plot: no option is specified! See \'ymt plot -h\' for more info.");
+            return;
+        }
 
-    // parsing command line arguments
-    args = args.remove(1);
-    GetoptResult argInfo;
-    try {
-        argInfo = getopt(
-            args,
-            "period|p", "time period in days (if -1 is specified, all data is taken)", &period,
-            "plt", "plot type <bar, barh, line>", &plotType,
-            "typeID|x", "filter using type id", &typeID,
-            "daily|d", "group data on a daily basis", &daily,
-            "monthly|m", "group data a monthly basis", &montly,
-            "yearly|y", "group data on a yearly basis", &yearly,
-            "save|s", "save path with plot name (default: <ymt savedir>/plot.png)", &savepath,
-        );
-    } catch(Exception e) {
-        writefln("#ymt plot: error! %s", e.msg);
-        return;
+        // commands
+        int period = 7,
+            typeID = -1;
+        bool daily = false, 
+            montly = false,
+            yearly = false;
+        string plotType = "bar",
+            savepath = basedir.buildPath("plot.png");
+
+        // parsing command line arguments
+        args = args.remove(1);
+        GetoptResult argInfo;
+        try {
+            argInfo = getopt(
+                args,
+                "period|p", "time period in days (if -1 is specified, all data is taken)", &period,
+                "plt", "plot type <bar, barh, line>", &plotType,
+                "typeID|x", "filter using type id", &typeID,
+                "daily|d", "group data on a daily basis", &daily,
+                "monthly|m", "group data a monthly basis", &montly,
+                "yearly|y", "group data on a yearly basis", &yearly,
+                "save|s", "save path with plot name (default: <ymt savedir>/plot.png)", &savepath,
+            );
+        } catch(Exception e) {
+            writefln("#ymt plot: error! %s", e.msg);
+            return;
+        }
+
+        // print ymt usage
+        if(argInfo.helpWanted) {
+            defaultGetoptPrinter("ymt plot version %s -- describe data.".format(YMT_VERSION), argInfo.options);
+            writefln("\nEXAMPLE: ymt plot --plt=line --period=30 --by=type --daily");
+            return;
+        }
+
+        // check if savepath exists
+        immutable spath = savepath.canFind("~") ? savepath.expandTilde : getcwd.buildPath(savepath);
+        if(!spath.dirName.exists) {
+            writefln("#ymt plot: save path <%s> does not exist!", savepath);
+            return;
+        }
+
+        // plot data
+        dbPlot(period, typeID, plotType, [daily, montly, yearly], spath);
     }
-
-    // print ymt usage
-    if(argInfo.helpWanted) {
-        defaultGetoptPrinter("ymt plot version %s -- describe data.".format(YMT_VERSION), argInfo.options);
-        writefln("\nEXAMPLE: ymt plot --plt=line --period=30 --by=type --daily");
-        return;
-    }
-
-    // check if savepath exists
-    immutable spath = savepath.canFind("~") ? savepath.expandTilde : getcwd.buildPath(savepath);
-    if(!spath.dirName.exists) {
-        writefln("#ymt plot: save path <%s> does not exist!", savepath);
-        return;
-    }
-
-    // plot data
-    dbPlot(period, typeID, plotType, [daily, montly, yearly], spath);
 }
 
 

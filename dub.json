@@ -23,6 +23,14 @@
             "platforms": ["linux"],
             "targetType": "executable",
             "libs": ["sqlite3"]
+        },
+	{
+            "name": "ymt-windows",
+            "platforms": ["windows"],
+            "targetType": "executable",
+	    "lflags": [
+		"-L./libs/windows"
+	    ]
         }
     ],
     "license": "MIT",

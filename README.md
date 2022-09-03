@@ -5,7 +5,7 @@ Your Money Tracker - a simple command line accounting utility. Download [precomp
 ### Features
 ```
 $ ymt help
-ymt version 0.2 - Your Money Tracker.
+ymt version 0.2.2 - Your Money Tracker.
 i     init <dbname>  initializes a new database
 r   remove <dbname>  removes an existing database
 s   switch <dbname>  switches to the specified database
@@ -26,7 +26,10 @@ EXAMPLE: ymt init crow.db
 * `sqlite3`
 * `python3` + `pandas, numpy, matplotlib` packages
 
-The `sqlite3` library comes preinstalled on macOS. On Linux you need to install the `libsqlite3-dev` package. Don't forget to install `python3` and its packages. 
+The `sqlite3` library comes preinstalled on macOS, but comes with the `ymt` binary on Windows. On Linux you need to install the `libsqlite3-dev` package.
+
+#### Linux and MacOS
+Don't forget to install `python3` and its packages. Not needed on Windows 10.
 
 YMT uses the DUB `d2sqlite3` binding to `sqlite3` C library to communicate with a database, `matplotlib-d`package to plot data and the `xlsxd` excel writer package to export data to an EXCEL file.
 
@@ -37,7 +40,8 @@ dub build --build=release
 
 Your will find the binary in the `bin/` folder.
 
-Currently only macOS and Linux platforms have a build configuration. My Windows build configuration fails to build the utility. Try to build it yourself and please report back upon success!!! Read more [here](https://github.com/koji-kojiro/matplotlib-d).
+#### Note
+`ymt` supports macOS, Linux and Windows 10. However, since my Windows 10 build configuration fails to build the `plotting` and `xlsxwriter` utilities, that functionality is unavailable. Everything else functions as normal.
 
 ### LICENSE
 All code is licensed under the MIT license.

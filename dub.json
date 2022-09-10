@@ -1,48 +1,57 @@
 {
-    "authors": [
-        "rillki"
-    ],
-    "copyright": "Copyright © 2022, rillki",
-    "dependencies": {
-        "d2sqlite3": "~>1.0.0"
-    },
-    "description": "YMT - Your Money Tracker",
-    "configurations": [
-        {
-            "name": "ymt-osx",
-            "platforms": ["osx"],
-            "targetType": "executable",
-            "dependencies": {
-                "matplotlib-d": "~>0.1.7",
-                "xlsxd": "~>4.0.2"
-            },
-            "lflags": [
-                "-L./libs/osx"
-            ]
-        },
-        {
-            "name": "ymt-linux",
-            "platforms": ["linux"],
-            "targetType": "executable",
-            "dependencies": {
-                "matplotlib-d": "~>0.1.7",
-                "xlsxd": "~>4.0.2"
-            },
-            "libs": ["sqlite3"]
-        },
-        {
-            "name": "ymt-windows",
-            "platforms": ["windows"],
-            "targetType": "executable",
-            "subConfigurations": {
-                "d2sqlite3": "with-lib"
-            },
-            "lflags": [
-                "/LIBPATH:./libs/windows"
-            ]
-        }
-    ],
-    "license": "MIT",
-    "name": "ymt",
-    "targetPath": "bin"
+	"authors": [
+		"rillki"
+	],
+	"configurations": [
+		{
+			"dependencies": {
+				"matplotlib-d": "~>0.1.7",
+				"xlsxd": "~>4.0.2"
+			},
+			"lflags": [
+				"-L./libs/osx"
+			],
+			"name": "ymt-osx",
+			"platforms": [
+				"osx"
+			],
+			"targetType": "executable"
+		},
+		{
+			"dependencies": {
+				"matplotlib-d": "~>0.1.7",
+				"xlsxd": "~>4.0.2"
+			},
+			"libs": [
+				"sqlite3"
+			],
+			"name": "ymt-linux",
+			"platforms": [
+				"linux"
+			],
+			"targetType": "executable"
+		},
+		{
+			"lflags": [
+				"/LIBPATH:./libs/windows"
+			],
+			"name": "ymt-windows",
+			"platforms": [
+				"windows"
+			],
+			"subConfigurations": {
+				"d2sqlite3": "with-lib"
+			},
+			"targetType": "executable"
+		}
+	],
+	"copyright": "Copyright © 2022, rillki",
+	"dependencies": {
+		"d2sqlite3": "~>1.0.0",
+		"ggplotd": "~>1.2.3"
+	},
+	"description": "YMT - Your Money Tracker",
+	"license": "MIT",
+	"name": "ymt",
+	"targetPath": "bin"
 }

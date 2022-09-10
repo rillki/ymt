@@ -1,29 +1,47 @@
 module ymtplot;
 
-version(Windows) {} else {
-    import std.array: array, empty;
-    import std.string: capitalize;
-    import std.format: format;
+import std.array: array, empty;
+import std.string: capitalize;
+import std.format: format;
+
+// plotting 
+version(Windows) {
+    import ggplotd.aes;
+    import ggplotd.axes;
+    import ggplotd.ggplotd;
+    import ggplotd.geom;
+} else {
     import plt = matplotlibd.pyplot;
+}
 
-    import ymtcommon;
+import ymtcommon;
 
-    void dbPlot(in int period, in int typeID, in string plotType, in bool[3] periodGroupBy, in string savepath) {
-        // check if basedir and db exist
-        if(!ymtIsInit("plot")) {
-            return;
-        }
+void dbPlot(in int period, in int typeID, in string plotType, in bool[3] periodGroupBy, in string savepath) {
+    // check if basedir and db exist
+    if(!ymtIsInit("plot")) {
+        return;
+    }
 
-        // get data
-        auto data = dbGetData(
-            period, 
-            typeID,
-            plotType,
-            periodGroupBy[2] ? "strftime('%Y', r.date)"
-                : periodGroupBy[1] ? "strftime('%Y-%m', r.date)"
-                : "strftime('%Y-%m-%d', r.date)"
-        );
+    // get data
+    auto data = dbGetData(
+        period, 
+        typeID,
+        plotType,
+        periodGroupBy[2] ? "strftime('%Y', r.date)"
+            : periodGroupBy[1] ? "strftime('%Y-%m', r.date)"
+            : "strftime('%Y-%m-%d', r.date)"
+    );
 
+    version(Windows) {
+        import std.range: zip;
+        import std.algorithm: map, maxElement;
+        zip(data.dbX, data.dbY)
+            .map!(a => aes!("x", "y")(a[0], a[1]))
+            .geomLine
+            .putIn(GGPlotD())
+            .put(yaxisRange(0, data.dbY.maxElement))
+            .save(savepath);
+    } else {
         // add labels
         void addValueLabels(in string plotType, in double[] values) {
             foreach(i, value; values) {
@@ -57,54 +75,54 @@ version(Windows) {} else {
         plt.savefig(savepath);
         plt.clear();
     }
+}
 
-    private auto dbGetData(in int period, in int typeID, in string plotType, in string periodGroupBy) {
-        // data
-        struct dbData { string[] dbX; double[] dbY; }
+private auto dbGetData(in int period, in int typeID, in string plotType, in string periodGroupBy) {
+    // data
+    struct dbData { string[] dbX; double[] dbY; }
 
-        // check if basedir and db exist
-        if(!ymtIsInit("export")) {
-            return dbData();
-        }
+    // check if basedir and db exist
+    if(!ymtIsInit("export")) {
+        return dbData();
+    }
 
-        // open db
-        auto db = Database(basedir.buildPath(dbname));
+    // open db
+    auto db = Database(basedir.buildPath(dbname));
 
-        // prepare a query
-        immutable query = (plotType == "line") ? 
-                `SELECT ` ~ periodGroupBy ~ ` as rdate, SUM(r.Receipt) as s FROM Receipt r `
-                ~ (period < 0 ? "" 
-                    : period == 0 ? `WHERE r.date=CURRENT_DATE ` 
-                    : `WHERE r.date>=strftime('%Y-%m-%d', datetime('now','-` 
-                ~ `%s day')) AND r.date<=CURRENT_DATE `.format(period)) 
-                ~ (typeID < 0 ? "" : `WHERE r.TypeID=%s `.format(typeID))
-                ~ `GROUP BY rdate ORDER BY rdate ASC`
-            : 
-                `SELECT t.Type, SUM(r.Receipt) as s FROM Receipt r
-                LEFT OUTER JOIN Type t on t.ID=r.TypeID `
-                ~ (period < 0 ? "" 
+    // prepare a query
+    immutable query = (plotType == "line") ? 
+            `SELECT ` ~ periodGroupBy ~ ` as rdate, SUM(r.Receipt) as s FROM Receipt r `
+            ~ (period < 0 ? "" 
                 : period == 0 ? `WHERE r.date=CURRENT_DATE ` 
                 : `WHERE r.date>=strftime('%Y-%m-%d', datetime('now','-` 
-                ~ `%s day')) AND r.date<=CURRENT_DATE `.format(period)) 
-                ~ (typeID < 0 ? "" : ` AND r.TypeID=%s `.format(typeID))
-                ~ `GROUP BY t.Type ORDER BY s DESC`;
+            ~ `%s day')) AND r.date<=CURRENT_DATE `.format(period)) 
+            ~ (typeID < 0 ? "" : `WHERE r.TypeID=%s `.format(typeID))
+            ~ `GROUP BY rdate ORDER BY rdate ASC`
+        : 
+            `SELECT t.Type, SUM(r.Receipt) as s FROM Receipt r
+            LEFT OUTER JOIN Type t on t.ID=r.TypeID `
+            ~ (period < 0 ? "" 
+            : period == 0 ? `WHERE r.date=CURRENT_DATE ` 
+            : `WHERE r.date>=strftime('%Y-%m-%d', datetime('now','-` 
+            ~ `%s day')) AND r.date<=CURRENT_DATE `.format(period)) 
+            ~ (typeID < 0 ? "" : ` AND r.TypeID=%s `.format(typeID))
+            ~ `GROUP BY t.Type ORDER BY s DESC`;
 
-        // retreive all types
-        dbData data;
-        auto results = db.execute(query);
-        foreach(row; results) {
-            immutable tmp = row.peek!string(0);
-            if(typeID > -1 && tmp.empty) {
-                continue;
-            }
-
-            // save data
-            data.dbX ~= tmp.empty ? "N/A" : tmp;
-            data.dbY ~= row.peek!double(1);
+    // retreive all types
+    dbData data;
+    auto results = db.execute(query);
+    foreach(row; results) {
+        immutable tmp = row.peek!string(0);
+        if(typeID > -1 && tmp.empty) {
+            continue;
         }
 
-        return data;
+        // save data
+        data.dbX ~= tmp.empty ? "N/A" : tmp;
+        data.dbY ~= row.peek!double(1);
     }
+
+    return data;
 }
 
 

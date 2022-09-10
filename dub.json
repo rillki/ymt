@@ -32,7 +32,10 @@
 			"targetType": "executable"
 		},
 		{
-			"lflags": [
+			"dependencies": {    
+		        "ggplotd": "~>1.2.3"
+            },
+            "lflags": [
 				"/LIBPATH:./libs/windows"
 			],
 			"name": "ymt-windows",
@@ -47,8 +50,7 @@
 	],
 	"copyright": "Copyright © 2022, rillki",
 	"dependencies": {
-		"d2sqlite3": "~>1.0.0",
-		"ggplotd": "~>1.2.3"
+		"d2sqlite3": "~>1.0.0"
 	},
 	"description": "YMT - Your Money Tracker",
 	"license": "MIT",

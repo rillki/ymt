@@ -2,10 +2,10 @@
 # YTM
 Your Money Tracker - a simple command line accounting utility. Download [precompiled](https://github.com/rillki/ymt/releases) binaries.
 
-### Features
+## Features
 ```
 $ ymt help
-ymt version 0.2.2 - Your Money Tracker.
+ymt version 0.2.3 - Your Money Tracker.
 i     init <dbname>  initializes a new database
 r   remove <dbname>  removes an existing database
 s   switch <dbname>  switches to the specified database
@@ -22,26 +22,25 @@ h     help           this help manual
 EXAMPLE: ymt init crow.db
 ```
 
-### Dependencies
+## Dependencies
+#### Linux and MacOS
 * `sqlite3`
 * `python3` + `pandas, numpy, matplotlib` packages
 
-The `sqlite3` library comes preinstalled on macOS, but comes with the `ymt` binary on Windows. On Linux you need to install the `libsqlite3-dev` package.
+The `sqlite3` library comes preinstalled on macOS. On Linux you need to install the `libsqlite3-dev` package. Python and its packages are used for plotting.
 
-#### Linux and MacOS
-Don't forget to install `python3` and its packages. Not needed on Windows 10.
+#### Windows
+On Windows you need `sqlite3` and `cairo` libraries. Both come with the `ymt` binary. You don't need to install anything. For plotting on Windows the `ggplotd` DUB package is used instead of `matplotlib-d`.
 
-YMT uses the DUB `d2sqlite3` binding to `sqlite3` C library to communicate with a database, `matplotlib-d`package to plot data and the `xlsxd` excel writer package to export data to an EXCEL file.
-
-### Build
+## Build
 ```
 dub build --build=release
 ```
 
-Your will find the binary in the `bin/` folder.
+Your will find the binary in the `bin/` folder. On Windows you need both the `ymt` binary and the `dll` libraries listed in `libs` folder. Put them along side each other.
 
-#### Note
-`ymt` supports macOS, Linux and Windows 10. However, since my Windows 10 build configuration fails to build the `plotting` and `xlsxwriter` utilities, that functionality is unavailable. Everything else functions as normal.
+### Note
+`ymt` supports macOS, Linux and Windows 10. However, since my Windows 10 build configuration fails to build the `xlsxwriter` utility, that exporting is unavailable. Everything else functions as normal.
 
-### LICENSE
+## LICENSE
 All code is licensed under the MIT license.

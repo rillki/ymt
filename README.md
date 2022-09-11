@@ -40,7 +40,7 @@ dub build --build=release
 Your will find the binary in the `bin/` folder. On Windows you need both the `ymt` binary and the `dll` libraries listed in `libs` folder. Put them along side each other.
 
 ### Note
-`ymt` supports macOS, Linux and Windows 10. However, since my Windows 10 build configuration fails to build the `xlsxwriter` utility, that exporting is unavailable. Everything else functions as normal.
+`ymt` supports macOS, Linux and Windows 10. However, since my Windows 10 build configuration fails to build the `xlsxwriter` utility, exporting data from database is unavailable. Everything else functions as normal.
 
 ## LICENSE
 All code is licensed under the MIT license.

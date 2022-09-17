@@ -7,7 +7,7 @@ public {
     import std.file: readText, exists;
     import std.process: env = environment;
 
-    enum YMT_VERSION = "0.2.3";
+    enum YMT_VERSION = "0.2.4";
     enum configFile = "ymt.config";
 
     string basedir;

@@ -18,14 +18,7 @@ import ymtlist;
 import ymtquery;
 import ymtdescribe;
 import ymtplot;
-
-/*
-    Plotting and db export is only available under LINUX and MACOS systems.
-    I encountered errors when building matplotlib and xlsxwriter on my Windows machine.
-*/
-version(Windows) {} else {
-    import ymtexport;
-}
+import ymtexport;
 
 void main(string[] args) {
     if(args.length < 2) {
@@ -96,9 +89,7 @@ void main(string[] args) {
             writefln("l     list [OPTIONS] use -h to read the usage manual on listing data");
             writefln("q    query [OPTIONS] use -h to read the usage manual on querying data");
             writefln("d describe [OPTIONS] use -h to read the usage manual on getting summary output");
-            version(Windows) {} else {
-                writefln("e   export [OPTIONS] use -h to read the usage manual on exporting data");
-            }
+            writefln("e   export [OPTIONS] use -h to read the usage manual on exporting data");
             writefln("p     plot [OPTIONS] use -h to read the usage manual on plotting data");
             writefln("c    clean           delete all data");
             writefln("v  version           display current version");
@@ -296,38 +287,47 @@ void parseDescribe(string[] args) {
     dbDescribe(period, detailed, descending);
 }
 
-version(Windows) {} else {
-    void parseExport(string[] args) {
-        if(args.length <= 2) {
-            writefln("#ymt export: no option is specified! See \'ymt export -h\' for more info.");
-            return;
-        }
+void parseExport(string[] args) {
+    if(args.length <= 2) {
+        writefln("#ymt export: no option is specified! See \'ymt export -h\' for more info.");
+        return;
+    }
 
-        // commands
-        string type = "csv";
-        string savepath = basedir;
+    // commands
+    string type = "csv";
+    string savepath = basedir;
 
-        // parsing command line arguments
-        args = args.remove(1);
-        GetoptResult argInfo;
-        try {
+    // parsing command line arguments
+    args = args.remove(1);
+    GetoptResult argInfo;
+    try {
+        version(Windows) {
+            argInfo = getopt(
+                args,
+                "savepath|s", "specify the save path", &savepath,
+            );
+        } else {
             argInfo = getopt(
                 args,
                 "type|t", "export type <csv, excel>", &type,
-                "savepath|s", "add category member", &savepath,
+                "savepath|s", "specify the save path", &savepath,
             );
-        } catch(Exception e) {
-            writefln("#ymt export: error! %s", e.msg);
-            return;
         }
+    } catch(Exception e) {
+        writefln("#ymt export: error! %s", e.msg);
+        return;
+    }
 
-        // print ymt usage
-        if(argInfo.helpWanted) {
-            defaultGetoptPrinter("ymt export version %s -- add your data.".format(YMT_VERSION), argInfo.options);
-            writefln("\nEXAMPLE: ymt export --type=csv --savepath=../Desktop");
-            return;
-        }
+    // print ymt usage
+    if(argInfo.helpWanted) {
+        defaultGetoptPrinter("ymt export version %s -- add your data.".format(YMT_VERSION), argInfo.options);
+        writefln("\nEXAMPLE: ymt export --type=csv --savepath=../Desktop");
+        return;
+    }
 
+    version(Windows) {
+        dbExportCSV(savepath);
+    } else {
         // export data
         if(type == "csv") {
             dbExportCSV(savepath);
@@ -337,10 +337,10 @@ version(Windows) {} else {
             writefln("#ymt export: Unrecognized option %s!", type);
             return;
         }
-
-        // done
-        writefln("#ymt export: data saved as %s file to %s", type.toUpper, savepath);
     }
+
+    // done
+    writefln("#ymt export: data saved as %s file to %s", type.toUpper, savepath);
 }
 
 void parsePlot(string[] args) {

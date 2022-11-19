@@ -78,7 +78,6 @@ void dbPlot(in int period, in int typeID, in string plotType, in bool[3] periodG
 }
 
 private auto dbGetData(in int period, in int typeID, in string plotType, in string periodGroupBy) {
-    // data
     struct dbData { string[] dbX; double[] dbY; }
 
     // check if basedir and db exist

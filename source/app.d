@@ -167,6 +167,7 @@ void parseList(string[] args) {
         : args[2] == "r" ? "receipts" 
         : args[2] == "l" ? "layout" 
         : args[2] == "s" ? "savedir"
+        : args[2] == "d" ? "dbdir" 
         : args[2]; 
     immutable subCommandsList = (command == "types" || command == "t") ? ["-l", "--limit"] :
         (command == "names" || command == "n") ? ["-x", "--typeID"] : [
@@ -204,6 +205,7 @@ void parseList(string[] args) {
             writefln("           -a       --all list all available data");
             writefln("l   layout show database table layout");
             writefln("s  savedir show YMT save directory\n");
+            writefln("d    dbdir show DB location\n");
             writefln("EXAMPLE: ymt list [OPTIONS]");
             break;
         case "types":
@@ -214,6 +216,9 @@ void parseList(string[] args) {
             break;
         case "savedir":
             writefln("%s", basedir);
+            break;
+        case "dbdir":
+            writefln("%s", dbname);
             break;
         default:
             writefln("#ymt list: Unrecognized option %s!", command);
@@ -392,7 +397,7 @@ void parsePlot(string[] args) {
     // print ymt usage
     if(argInfo.helpWanted) {
         defaultGetoptPrinter("ymt plot version %s -- describe data.".format(YMT_VERSION), argInfo.options);
-        writefln("\nEXAMPLE: ymt plot --plt=line --period=30 --by=type --daily");
+        writefln("\nEXAMPLE: ymt plot --period=30 --typeID=id --daily");
         return;
     }
 

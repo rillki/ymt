@@ -14,7 +14,7 @@ public {
     string dbname;
     static this() {
         version(Windows) {
-            basedir = env.get("HOME", "PUBLIC").buildPath(".ymt");
+            basedir = env.get("USERPROFILE", "C:\\Users\\Public").buildPath(".ymt");
         } else {
             basedir = env.get("HOME", "~".expandTilde).buildPath(".ymt");
         }

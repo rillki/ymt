@@ -355,12 +355,15 @@ void parsePlot(string[] args) {
     }
 
     // commands
-    int period = 7,
+    int 
+        period = 7,
         typeID = -1;
-    bool daily = false, 
+    bool 
+        daily = false, 
         montly = false,
         yearly = false;
-    string plotType = "bar",
+    string 
+        plotType = "bar",
         savepath = basedir.buildPath("plot.png");
 
     // parsing command line arguments
@@ -377,6 +380,11 @@ void parsePlot(string[] args) {
                 "yearly|y", "group data on a yearly basis", &yearly,
                 "save|s", "save path with plot name (default: <ymt savedir>/plot.png)", &savepath,
             );
+
+            // this is needed, otherwise it will group by spending category (typeID) instead of period
+            if(daily || montly || yearly) {
+                plotType = "line";
+            }
         } else {
             argInfo = getopt(
                 args,

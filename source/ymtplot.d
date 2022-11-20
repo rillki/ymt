@@ -40,6 +40,7 @@ void dbPlot(in int period, in int typeID, in string plotType, in bool[3] periodG
             .geomLine
             .putIn(GGPlotD())
             .put(yaxisRange(0, data.dbY.maxElement))
+            .put(xaxisTextAngle(30))
             .save(savepath);
     } else {
         // add labels

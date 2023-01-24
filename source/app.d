@@ -1,4 +1,3 @@
-// Built with DMD v2.100.0
 module app;
 
 import std.stdio: writefln;
@@ -204,7 +203,7 @@ void parseList(string[] args) {
             writefln("           -m --lastmonth list data for past 30 days");
             writefln("           -a       --all list all available data");
             writefln("l   layout show database table layout");
-            writefln("s  savedir show YMT save directory\n");
+            writefln("s  savedir show YMT save directory");
             writefln("d    dbdir show DB location\n");
             writefln("EXAMPLE: ymt list [OPTIONS]");
             break;

@@ -24,23 +24,17 @@ EXAMPLE: ymt init crow.db
 
 ## Dependencies
 #### Linux and MacOS
-* `sqlite3`
-* `python3` + `pandas, numpy, matplotlib` packages
-
-The `sqlite3` library comes preinstalled on macOS. On Linux you need to install the `libsqlite3-dev` package. Python and its packages are used for plotting.
+You need `sqlite3` library. It comes preinstalled on macOS. But on Linux you need to install the `libsqlite3-dev` package. 
 
 #### Windows
-On Windows you need `sqlite3` and `cairo` libraries. Both come with the `ymt` binary. You don't need to install anything. For plotting on Windows the `ggplotd` DUB package is used instead of `matplotlib-d`.
+On Windows you need both `sqlite3` and `cairo` libraries. Both come with the `ymt` binary. You don't need to install anything.
 
 ## Build
 ```
-dub build --build=release
+dub build
 ```
 
 Your will find the binary in the `bin/` folder. On Windows you need both the `ymt` binary and the `dll` libraries listed in `libs` folder. Put them along side each other.
-
-### Note
-`ymt` supports macOS, Linux and Windows 10. However, since my Windows 10 build configuration fails to build the `xlsxwriter` utility, exporting data from database is unavailable. Everything else functions as normal.
 
 ## LICENSE
 All code is licensed under the MIT license.

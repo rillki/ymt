@@ -2,10 +2,10 @@ module app;
 
 import std.stdio: writefln;
 import std.conv: to;
-import std.file: getcwd;
-import std.path: dirName;
+import std.path: isValidPath;
+import std.file: getcwd, isDir;
 import std.array: empty;
-import std.string: format, split, toUpper;
+import std.string: format, split, toUpper, toLower, startsWith;
 import std.getopt: getopt, GetoptResult, defaultGetoptPrinter;
 import std.algorithm.mutation: remove;
 import std.algorithm.searching: canFind;
@@ -360,47 +360,24 @@ void parsePlot(string[] args) {
 
     // commands
     int 
-        opt_period = 7,
+        opt_grab = -1,
         opt_typeID = -1;
-    bool 
-        opt_daily = false, 
-        opt_montly = false,
-        opt_yearly = false;
     string 
-        opt_plotType = "bar",
-        opt_savepath = basedir.buildPath("plot.png");
+        opt_interval = "monthly",
+        opt_path = basedir;
 
     // parsing command line arguments
     args = args.remove(1);
     GetoptResult argInfo;
     try {
-        version(Windows) {
             argInfo = getopt(
                 args,
-                "period|p", "time period in days (if -1 is specified, all data is taken)", &opt_period,
+                "grab|g", "grab time period in days (default: all)", &opt_grab,
                 "typeID|x", "filter using type id", &opt_typeID,
-                "daily|d", "group data on a daily basis", &opt_daily,
-                "monthly|m", "group data a monthly basis", &opt_montly,
-                "yearly|y", "group data on a yearly basis", &opt_yearly,
-                "save|s", "save path with plot name (default: <ymt savedir>/plot.png)", &opt_savepath,
+                "interval|i", "group data [ daily, monthly, yearly ] (default: monthly)", &opt_interval,
+                "path|p", "save path (default: <ymt savedir>/plot.png)", &opt_path,
             );
 
-            // this is needed, otherwise it will group by spending category (typeID) instead of period
-            if(opt_daily || opt_montly || opt_yearly) {
-                opt_plotType = "line";
-            }
-        } else {
-            argInfo = getopt(
-                args,
-                "period|p", "time period in days (if -1 is specified, all data is taken)", &opt_period,
-                "plt", "plot type <bar, barh, line>", &opt_plotType,
-                "typeID|x", "filter using type id", &opt_typeID,
-                "daily|d", "group data on a daily basis", &opt_daily,
-                "monthly|m", "group data a monthly basis", &opt_montly,
-                "yearly|y", "group data on a yearly basis", &opt_yearly,
-                "save|s", "save path with plot name (default: <ymt savedir>/plot.png)", &opt_savepath,
-            );
-        }
     } catch(Exception e) {
         writefln("#ymt plot: error! %s", e.msg);
         return;
@@ -408,18 +385,24 @@ void parsePlot(string[] args) {
 
     // print ymt usage
     if(argInfo.helpWanted) {
-        defaultGetoptPrinter("ymt plot version %s -- describe data.".format(YMT_VERSION), argInfo.options);
-        writefln("\nEXAMPLE: ymt plot --period=30 --typeID=id --daily");
+        defaultGetoptPrinter("ymt plot version %s -- plot data.".format(YMT_VERSION), argInfo.options);
+        writefln("\nEXAMPLE: ymt plot --grab=30 --typeID=id --interval=monthly --path ../pics");
+        return;
+    }
+
+    // check if the specified interval is valid
+    opt_interval = opt_interval.toLower();
+    if(!opt_interval.startsWith("d", "m", "y")) {
+        writefln("#ymt plot: interval specified <%s> isn't supported!", opt_interval);
         return;
     }
 
     // check if savepath exists
-    immutable spath = opt_savepath.canFind("~") ? opt_savepath.expandTilde : getcwd.buildPath(opt_savepath);
-    if(!spath.dirName.exists) {
-        writefln("#ymt plot: save path <%s> does not exist!", opt_savepath);
+    if(!opt_path.isValidPath || !(opt_path.exists && opt_path.isDir)) {
+        writefln("#ymt plot: directory <%s> does not exist!", opt_path);
         return;
     }
 
     // plot data
-    dbPlot(opt_period, opt_typeID, opt_plotType, [opt_daily, opt_montly, opt_yearly], spath);
+    dbPlot(opt_grab, opt_typeID, opt_interval[0], opt_path.buildPath("plot.png"));
 }

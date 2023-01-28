@@ -5,8 +5,7 @@
 	"configurations": [
 		{
 			"dependencies": {
-				"matplotlib-d": "~>0.1.7",
-				"xlsxd": "~>4.0.2"
+				"ggplotd": "~>1.2.3"
 			},
 			"lflags": [
 				"-L./libs/osx"
@@ -19,8 +18,7 @@
 		},
 		{
 			"dependencies": {
-				"matplotlib-d": "~>0.1.7",
-				"xlsxd": "~>4.0.2"
+				"ggplotd": "~>1.2.3"
 			},
 			"libs": [
 				"sqlite3"

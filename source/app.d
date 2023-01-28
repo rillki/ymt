@@ -110,25 +110,26 @@ void parseAdd(string[] args) {
 
     // commands
     string 
-        type = null,
-        name = null,
-        date = null;
+        opt_type = null,
+        opt_name = null,
+        opt_date = null;
     uint 
-        typeID = 0, 
-        nameID = 0;
-    float receipt = 0;
+        opt_typeID = 0, 
+        opt_nameID = 0;
+    float 
+        opt_receipt = 0;
 
     // parsing command line arguments
     GetoptResult argInfo;
     try {
         argInfo = getopt(
             args,
-            "type|t", "add category name", &type,
-            "name|n", "add category member", &name,
-            "typeID|x", "category ID", &typeID,
-            "nameID|z", "category member ID", &nameID,
-            "receipt|r", "add receipt", &receipt,
-            "date|d", "specify date Y-m-d", &date,
+            "type|t", "add category name", &opt_type,
+            "name|n", "add category member", &opt_name,
+            "typeID|x", "category ID", &opt_typeID,
+            "nameID|z", "category member ID", &opt_nameID,
+            "receipt|r", "add receipt", &opt_receipt,
+            "date|d", "specify date Y-m-d", &opt_date,
         );
     } catch(Exception e) {
         writefln("#ymt add: error! %s", e.msg);
@@ -144,12 +145,12 @@ void parseAdd(string[] args) {
         return;
     }
 
-    if(type !is null) {
-        dbAddType(type);
-    } else if(name !is null) {
-        dbAddName(name, typeID);
+    if(opt_type !is null) {
+        dbAddType(opt_type);
+    } else if(opt_name !is null) {
+        dbAddName(opt_name, opt_typeID);
     } else {
-        dbAddReceipt(receipt, nameID, typeID, date);
+        dbAddReceipt(opt_receipt, opt_nameID, opt_typeID, opt_date);
     }
 }
 
@@ -233,11 +234,11 @@ void parseQuery(string[] args) {
     }
 
     // commands
-    immutable command = args[2];
-    immutable query = args.length > 3 ? args[3] : null;
+    immutable opt_command = args[2];
+    immutable opt_query = args.length > 3 ? args[3] : null;
 
     // check case
-    switch(command) {
+    switch(opt_command) {
         case "-h":
         case "--help":
             writefln("ymt query version %s -- use custom query.", YMT_VERSION);
@@ -246,10 +247,10 @@ void parseQuery(string[] args) {
             break;
         case "-e":
         case "--execute":
-            dbQuery(query);
+            dbQuery(opt_query);
             break;
         default:
-            writefln("#ymt query: Unrecognized option %s!", command);
+            writefln("#ymt query: Unrecognized option %s!", opt_command);
             break;
     }
 }
@@ -261,9 +262,11 @@ void parseDescribe(string[] args) {
     }
 
     // commands
-    int period = 7;
-    bool detailed = false;
-    bool descending = false;
+    int 
+        opt_period = 7;
+    bool 
+        opt_detailed = false,
+        opt_descending = false;
 
     // parsing command line arguments
     args = args.remove(1);
@@ -271,9 +274,9 @@ void parseDescribe(string[] args) {
     try {
         argInfo = getopt(
             args,
-            "period|p", "time period in days", &period,
-            "detailed|d", "detailed report (default: false)", &detailed,
-            "desc", "descending order (default: false)", &descending,
+            "period|p", "time period in days", &opt_period,
+            "detailed|d", "detailed report (default: false)", &opt_detailed,
+            "desc", "descending order (default: false)", &opt_descending,
         );
     } catch(Exception e) {
         writefln("#ymt describe: error! %s", e.msg);
@@ -288,7 +291,7 @@ void parseDescribe(string[] args) {
     }
 
     // describe data
-    dbDescribe(period, detailed, descending);
+    dbDescribe(opt_period, opt_detailed, opt_descending);
 }
 
 void parseExport(string[] args) {
@@ -298,8 +301,10 @@ void parseExport(string[] args) {
     }
 
     // commands
-    string type = "csv";
-    string savepath = basedir;
+    string 
+        opt_type = "csv";
+    string 
+        opt_savepath = basedir;
 
     // parsing command line arguments
     args = args.remove(1);
@@ -308,13 +313,13 @@ void parseExport(string[] args) {
         version(Windows) {
             argInfo = getopt(
                 args,
-                "savepath|s", "specify the save path", &savepath,
+                "savepath|s", "specify the save path", &opt_savepath,
             );
         } else {
             argInfo = getopt(
                 args,
-                "type|t", "export type <csv, excel>", &type,
-                "savepath|s", "specify the save path", &savepath,
+                "type|t", "export type <csv, excel>", &opt_type,
+                "savepath|s", "specify the save path", &opt_savepath,
             );
         }
     } catch(Exception e) {
@@ -330,13 +335,13 @@ void parseExport(string[] args) {
     }
 
     version(Windows) {
-        dbExportCSV(savepath);
+        dbExportCSV(opt_savepath);
     } else {
         // export data
         if(type == "csv") {
-            dbExportCSV(savepath);
+            dbExportCSV(opt_savepath);
         } else if(type == "excel") {
-            dbExportExcel(savepath);
+            dbExportExcel(opt_savepath);
         } else {
             writefln("#ymt export: Unrecognized option %s!", type);
             return;
@@ -344,7 +349,7 @@ void parseExport(string[] args) {
     }
 
     // done
-    writefln("#ymt export: data saved as %s file to %s", type.toUpper, savepath);
+    writefln("#ymt export: data saved as %s file to %s", opt_type.toUpper, opt_savepath);
 }
 
 void parsePlot(string[] args) {
@@ -355,15 +360,15 @@ void parsePlot(string[] args) {
 
     // commands
     int 
-        period = 7,
-        typeID = -1;
+        opt_period = 7,
+        opt_typeID = -1;
     bool 
-        daily = false, 
-        montly = false,
-        yearly = false;
+        opt_daily = false, 
+        opt_montly = false,
+        opt_yearly = false;
     string 
-        plotType = "bar",
-        savepath = basedir.buildPath("plot.png");
+        opt_plotType = "bar",
+        opt_savepath = basedir.buildPath("plot.png");
 
     // parsing command line arguments
     args = args.remove(1);
@@ -372,28 +377,28 @@ void parsePlot(string[] args) {
         version(Windows) {
             argInfo = getopt(
                 args,
-                "period|p", "time period in days (if -1 is specified, all data is taken)", &period,
-                "typeID|x", "filter using type id", &typeID,
-                "daily|d", "group data on a daily basis", &daily,
-                "monthly|m", "group data a monthly basis", &montly,
-                "yearly|y", "group data on a yearly basis", &yearly,
-                "save|s", "save path with plot name (default: <ymt savedir>/plot.png)", &savepath,
+                "period|p", "time period in days (if -1 is specified, all data is taken)", &opt_period,
+                "typeID|x", "filter using type id", &opt_typeID,
+                "daily|d", "group data on a daily basis", &opt_daily,
+                "monthly|m", "group data a monthly basis", &opt_montly,
+                "yearly|y", "group data on a yearly basis", &opt_yearly,
+                "save|s", "save path with plot name (default: <ymt savedir>/plot.png)", &opt_savepath,
             );
 
             // this is needed, otherwise it will group by spending category (typeID) instead of period
-            if(daily || montly || yearly) {
-                plotType = "line";
+            if(opt_daily || opt_montly || opt_yearly) {
+                opt_plotType = "line";
             }
         } else {
             argInfo = getopt(
                 args,
-                "period|p", "time period in days (if -1 is specified, all data is taken)", &period,
-                "plt", "plot type <bar, barh, line>", &plotType,
-                "typeID|x", "filter using type id", &typeID,
-                "daily|d", "group data on a daily basis", &daily,
-                "monthly|m", "group data a monthly basis", &montly,
-                "yearly|y", "group data on a yearly basis", &yearly,
-                "save|s", "save path with plot name (default: <ymt savedir>/plot.png)", &savepath,
+                "period|p", "time period in days (if -1 is specified, all data is taken)", &opt_period,
+                "plt", "plot type <bar, barh, line>", &opt_plotType,
+                "typeID|x", "filter using type id", &opt_typeID,
+                "daily|d", "group data on a daily basis", &opt_daily,
+                "monthly|m", "group data a monthly basis", &opt_montly,
+                "yearly|y", "group data on a yearly basis", &opt_yearly,
+                "save|s", "save path with plot name (default: <ymt savedir>/plot.png)", &opt_savepath,
             );
         }
     } catch(Exception e) {
@@ -409,12 +414,12 @@ void parsePlot(string[] args) {
     }
 
     // check if savepath exists
-    immutable spath = savepath.canFind("~") ? savepath.expandTilde : getcwd.buildPath(savepath);
+    immutable spath = opt_savepath.canFind("~") ? opt_savepath.expandTilde : getcwd.buildPath(opt_savepath);
     if(!spath.dirName.exists) {
-        writefln("#ymt plot: save path <%s> does not exist!", savepath);
+        writefln("#ymt plot: save path <%s> does not exist!", opt_savepath);
         return;
     }
 
     // plot data
-    dbPlot(period, typeID, plotType, [daily, montly, yearly], spath);
+    dbPlot(opt_period, opt_typeID, opt_plotType, [opt_daily, opt_montly, opt_yearly], spath);
 }

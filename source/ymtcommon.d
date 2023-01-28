@@ -39,7 +39,12 @@ public {
     }
 }
 
-/// Writes data to file
+/++ Writes data to file
+
+    Params:
+        filename = filename
+        data = data to write to file in one go
++/
 void fileWrite(in string filename, in string data) {
     import std.stdio: File;
     auto file = File(filename, "w");

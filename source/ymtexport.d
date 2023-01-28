@@ -1,118 +1,60 @@
 module ymtexport;
 
 import ymtcommon;
-import std.array: join;
-import std.format: format;
 
-version(Windows) {} else {
-    void dbExportExcel(in string savepath = basedir) {
-        import std.conv: to;
-        import libxlsxd: newWorkbook;
+/++ Exports database to CSV file
 
-        // check if savepath exists
-        if(!savepath.exists) {
-            writefln("#ymt export: %s does not exist!", savepath);
-            return;
-        }
+    Params:
+        path = save path with filename
+        sep = char separator
 
-        // get data
-        auto dbData = dbGetData();
++/
+void dbExportCSV(in string path, in char sep = ';') {
+    import std.array: join;
 
-        // files
-        immutable sheet_dbTypes = dbData.dbTypes.stringof;
-        immutable sheet_dbNames = dbData.dbNames.stringof;
-        immutable sheet_dbReceipts = dbData.dbReceipts.stringof;
-
-        // create workbook
-        auto workbook  = newWorkbook(savepath.buildPath(dbname ~ ".xlsx"));
-        
-        /// Write data to CSV
-        void arr2excel(typeof(workbook) wb, in string sheetName, in string[][] data) {
-            auto worksheet = wb.addWorksheet(sheetName);
-            foreach(i, row; data) {
-                foreach(j, d; row) {
-                    worksheet.writeString(i.to!uint, j.to!ushort, d);
-                }
-            }
-        }
-
-        // save dbTypes, dbNames, dbReceipts
-        arr2excel(workbook, sheet_dbTypes, dbData.dbTypes);
-        arr2excel(workbook, sheet_dbNames, dbData.dbNames);
-        arr2excel(workbook, sheet_dbReceipts, dbData.dbReceipts);
-    }
-}
-
-void dbExportCSV(in string savepath = basedir, in char sep = ';') {
-    // check if savepath exists
-    if(!savepath.exists) {
-        writefln("#ymt export: %s does not exist!", savepath);
+    // check if basedir and db exist
+    if(!ymtIsInit("export")) {
         return;
     }
 
     // get data
     auto dbData = dbGetData();
-
-    // files
-    immutable csv_dbTypes = savepath.buildPath(dbData.dbTypes.stringof ~ ".csv");
-    immutable csv_dbNames = savepath.buildPath(dbData.dbNames.stringof ~ ".csv");
-    immutable csv_dbReceipts = savepath.buildPath(dbData.dbReceipts.stringof ~ ".csv");
     
-    /// Write data to CSV
-    void arr2csv(in string filename, in string[][] data) {
-        string tmp = null;
-        foreach(row; data) {
-            tmp ~= row.join(sep) ~ '\n';
-        }
-        filename.fileWrite(tmp);
+    // transform data
+    string data = ["Dates", "Receipts", "Types", "Names\n"].join(sep);
+    foreach(row; dbData) {
+        data ~= row.join(sep) ~ "\n";
     }
 
-    // save dbTypes, dbNames, dbReceipts
-    arr2csv(csv_dbTypes, dbData.dbTypes);
-    arr2csv(csv_dbNames, dbData.dbNames);
-    arr2csv(csv_dbReceipts, dbData.dbReceipts);
+    // write data to file
+    path.fileWrite(data);
 }
 
-private auto dbGetData() {
-    // data
-    struct dbData { string[][] dbTypes, dbNames, dbReceipts; }
-
-    // check if basedir and db exist
-    if(!ymtIsInit("export")) {
-        return dbData();
-    }
-
+/++ Returns database data
+    Returns: string[4][] = [Dates, Receipts, Types, Names]
++/
+private string[][] dbGetData() {
     // open db
     auto db = Database(basedir.buildPath(dbname));
 
     // prepare a query
-    immutable query = `SELECT * FROM %s`;
+    immutable query = `
+        SELECT data.Date, data.Receipt, data.Type, data.Name FROM (
+            SELECT * FROM Receipt AS r
+            JOIN 
+                Type AS t ON r.TypeID=t.ID, 
+                Name AS n ON r.NameID=n.ID
+        ) AS data
+    `;
 
-    // retreive all types
-    string[][] dbTypes = [["ID", "Type"]];
-    auto results = db.execute(query.format("Type"));
+    // query data
+    auto results = db.execute(query);
+
+    // save data
+    string[][] dbData;
     foreach(row; results) {
-        dbTypes ~= [row[dbTypes[0][0]].as!string, row[dbTypes[0][1]].as!string];
+        dbData ~= [row[0].as!string, row[1].as!string, row[2].as!string, row[3].as!string];
     }
 
-    // retreive all names
-    string[][] dbNames = [["ID", "TypeID", "Name"]];
-    results = db.execute(query.format("Name"));
-    foreach(row; results) {
-        dbNames ~= [row[dbNames[0][0]].as!string, row[dbNames[0][1]].as!string, row[dbNames[0][2]].as!string];
-    }
-
-    // retreive all receipts
-    string[][] dbReceipts = [["Date", "TypeID", "NameID", "Receipt"]];
-    results = db.execute(query.format("Receipt"));
-    foreach(row; results) {
-        dbReceipts ~= [
-            row[dbReceipts[0][0]].as!string, 
-            row[dbReceipts[0][1]].as!string, 
-            row[dbReceipts[0][2]].as!string,
-            row[dbReceipts[0][3]].as!string
-        ];
-    }
-
-    return dbData(dbTypes, dbNames, dbReceipts);
+    return dbData;
 }

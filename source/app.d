@@ -58,12 +58,10 @@ void main(string[] args) {
         case "describe":
             parseDescribe(args);
             break;
-        version(Windows) {} else {
-            case "e":
-            case "export":
-                parseExport(args);
-                break;
-        }
+        case "e":
+        case "export":
+            parseExport(args);
+            break;
         case "p":
         case "plot":
             parsePlot(args);
@@ -295,33 +293,19 @@ void parseDescribe(string[] args) {
 }
 
 void parseExport(string[] args) {
-    if(args.length <= 2) {
-        writefln("#ymt export: no option is specified! See \'ymt export -h\' for more info.");
-        return;
-    }
-
     // commands
-    string 
-        opt_type = "csv";
-    string 
-        opt_savepath = basedir;
+    string opt_path = basedir;
+    char opt_separator = ';';
 
     // parsing command line arguments
     args = args.remove(1);
     GetoptResult argInfo;
     try {
-        version(Windows) {
-            argInfo = getopt(
-                args,
-                "savepath|s", "specify the save path", &opt_savepath,
-            );
-        } else {
-            argInfo = getopt(
-                args,
-                "type|t", "export type <csv, excel>", &opt_type,
-                "savepath|s", "specify the save path", &opt_savepath,
-            );
-        }
+        argInfo = getopt(
+            args,
+            "path|p", "specify the save path (default: <ymt savedir>/dbData.csv)", &opt_path,
+            "separator|s", "specify data separator (default: \';\')", &opt_separator,
+        );
     } catch(Exception e) {
         writefln("#ymt export: error! %s", e.msg);
         return;
@@ -330,26 +314,19 @@ void parseExport(string[] args) {
     // print ymt usage
     if(argInfo.helpWanted) {
         defaultGetoptPrinter("ymt export version %s -- add your data.".format(YMT_VERSION), argInfo.options);
-        writefln("\nEXAMPLE: ymt export --type=csv --savepath=../Desktop");
+        writefln("\nEXAMPLE: ymt export path=../Desktop");
         return;
     }
 
-    version(Windows) {
-        dbExportCSV(opt_savepath);
-    } else {
-        // export data
-        if(type == "csv") {
-            dbExportCSV(opt_savepath);
-        } else if(type == "excel") {
-            dbExportExcel(opt_savepath);
-        } else {
-            writefln("#ymt export: Unrecognized option %s!", type);
-            return;
-        }
+    // check if savepath exists
+    if(!opt_path.isValidPath || !(opt_path.exists && opt_path.isDir)) {
+        writefln("#ymt export: directory <%s> does not exist!", opt_path);
+        return;
     }
 
-    // done
-    writefln("#ymt export: data saved as %s file to %s", opt_type.toUpper, opt_savepath);
+    // export data
+    dbExportCSV(opt_path.buildPath("dbData.csv"), opt_separator);
+    writefln("#ymt export: data saved to <%s>", opt_path.buildPath("dbData.csv"));
 }
 
 void parsePlot(string[] args) {
@@ -405,4 +382,5 @@ void parsePlot(string[] args) {
 
     // plot data
     dbPlot(opt_grab, opt_typeID, opt_interval[0], opt_path.buildPath("plot.png"));
+    writefln("#ymt plot: saved plot to <%s>", opt_path.buildPath("plot.png"));
 }

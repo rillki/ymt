@@ -11,7 +11,17 @@ import ggplotd.geom;
 
 import ymtcommon;
 
-void dbPlot(in int period, in int typeID, in char periodGroupBy, in string savepath) {
+/++ Plots data
+
+    Params: 
+        period = time period in days
+        typeID = category ID
+        periodGroupBy = dayily, monthly, yearly
+        path = save path with plot name
+
+
++/
+void dbPlot(in int period, in int typeID, in char periodGroupBy, in string path) {
     // check if basedir and db exist
     if(!ymtIsInit("plot")) {
         return;
@@ -35,7 +45,7 @@ void dbPlot(in int period, in int typeID, in char periodGroupBy, in string savep
         .putIn(GGPlotD())
         .put(yaxisRange(0, data.receiptValues.maxElement))
         .put(xaxisTextAngle(30))
-        .save(savepath);
+        .save(path);
 }
 
 /++ Returns Dates and Receipt values
@@ -49,11 +59,6 @@ void dbPlot(in int period, in int typeID, in char periodGroupBy, in string savep
 +/
 private auto dbGetData(in int period, in int typeID, in string periodGroupBy) {
     struct dbData { string[] dates; double[] receiptValues; }
-
-    // check if basedir and db exist
-    if(!ymtIsInit("export")) {
-        return dbData();
-    }
 
     // open db
     auto db = Database(basedir.buildPath(dbname));

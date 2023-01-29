@@ -27,7 +27,7 @@ void dbQuery(in string query) {
 	// execute query
 	writefln("");
     try {
-		writefln("#ymt query: executed \"%s\"", query);
+		writefln("#ymt query: executing \"%s\"", query);
 
         auto results = db.execute(query);
 		foreach(row; results) {
@@ -36,5 +36,5 @@ void dbQuery(in string query) {
     } catch(Exception e) {
         writefln("#ymt query: %s", e.msg);
     }
-	writefln("");
+	writefln("ymt query: done.");
 }

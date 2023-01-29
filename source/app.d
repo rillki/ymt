@@ -151,7 +151,7 @@ void parseAdd(string[] args) {
         writefln("#ymt add: <%s> added and attached to typeID=%s.", opt_name, opt_typeID);
     } else {
         dbAddReceipt(opt_receipt, opt_nameID, opt_typeID, opt_date);
-        writefln("#ymt add: receipt value %s added to typeID:nameID=%s:%s.", opt_receipt, opt_typeID, opt_nameID);
+        writefln("#ymt add: receipt value %s added to typeID::nameID=%s::%s.", opt_receipt, opt_typeID, opt_nameID);
     }
 }
 

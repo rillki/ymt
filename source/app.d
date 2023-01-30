@@ -145,13 +145,13 @@ void parseAdd(string[] args) {
 
     if(opt_type !is null) {
         dbAddType(opt_type);
-        writefln("#ymt add: <%s> added.", opt_type);
+        writefln("#ymt add: <%s> type added.", opt_type);
     } else if(opt_name !is null) {
         dbAddName(opt_name, opt_typeID);
-        writefln("#ymt add: <%s> added and attached to typeID=%s.", opt_name, opt_typeID);
+        writefln("#ymt add: <%s> name attached to typeID(%s).", opt_name, opt_typeID);
     } else {
         dbAddReceipt(opt_receipt, opt_nameID, opt_typeID, opt_date);
-        writefln("#ymt add: receipt value %s added to typeID::nameID=%s::%s.", opt_receipt, opt_typeID, opt_nameID);
+        writefln("#ymt add: receipt value %s added with typeID(%s) and nameID(%s).", opt_receipt, opt_typeID, opt_nameID);
     }
 }
 

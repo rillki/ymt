@@ -55,7 +55,7 @@ void dbList(in string command, in string filtercmd) {
             auto name = row["Name"].as!string;
             writefln("%6s   %6s   %s", id, typeID, name);
         }
-    }  else if(command == "layout") {
+    } else if(command == "layout") {
         writefln(
             "\n#ymt list: DB layout\n\n%s\n%s\n%s", 
             "Type:\n-------------\n| Type | ID |\n-------------\n", 

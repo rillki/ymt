@@ -1,42 +1,90 @@
 module ymtcommon;
 
-public {
-    import d2sqlite3: Database;
-    import std.stdio: writefln;
-    import std.path: expandTilde, buildPath;
-    import std.file: readText, exists;
-    import std.process: env = environment;
+import d2sqlite3: Database;
+import std.stdio: writefln;
+import std.path: expandTilde, buildPath;
+import std.file: readText, exists;
+import std.process: env = environment;
 
-    enum YMT_VERSION = "0.2.4";
-    enum configFile = "ymt.config";
+public enum YMT_VERSION = "0.2.4";
+public enum configFile = "ymt.config";
 
-    string basedir;
-    string dbname;
-    static this() {
-        version(Windows) {
-            basedir = env.get("USERPROFILE", "C:\\Users\\Public").buildPath(".ymt");
-        } else {
-            basedir = env.get("HOME", "~".expandTilde).buildPath(".ymt");
-        }
+public string basedir;
+public string dbname;
 
-        dbname = basedir.exists ? basedir.buildPath(configFile).readText : "";
+static this() {
+    version(Windows) {
+        basedir = env.get("USERPROFILE", "C:\\Users\\Public").buildPath(".ymt");
+    } else {
+        basedir = env.get("HOME", "~".expandTilde).buildPath(".ymt");
     }
 
-    bool ymtIsInit(in string cmd) {
-        // check if basedir exists
-        if(!basedir.exists) {
-            writefln("#ymt %s: error! Initialize ymt first!", cmd);
-            return false;
-        }
+    dbname = basedir.exists ? basedir.buildPath(configFile).readText : "";
+}
 
-        // check if db exists
-        if(!basedir.buildPath(dbname).exists) {
-            writefln("#ymt %s: error! %s does not exist, you need to initialize one!", cmd, dbname);
-            return false;
-        }
+/++ Check if YMT was initialized
 
-        return true;
+    Params:
+        cmd = command that was used (needed for error output)
+
+    Returns: `true` is YMT was initialized
+ +/
+bool ymtIsInit(in string cmd) {
+    // check if basedir exists
+    if(!basedir.exists) {
+        writefln("#ymt %s: error! Initialize ymt first!", cmd);
+        return false;
     }
+
+    // check if db exists
+    if(!basedir.buildPath(dbname).exists) {
+        writefln("#ymt %s: error! %s does not exist, you need to initialize one!", cmd, dbname);
+        return false;
+    }
+
+    return true;
+}
+
+private Database db;
+
+/++ Executes a DB query 
+
+    Params:
+        query = SQL query
++/
+auto dbRun(in string query) {
+    if(!ymtIsInit("__internal_operation__")) {
+        return ResultRange.init;
+    }
+
+    // open DB if it's the first time
+    if(db == db.init) {
+        db = Database(basedir.buildPath(dbname));
+    }
+
+    // execute query
+    db.run(query);
+}
+
+/++ Executes a DB query and returns the result 
+
+    Params:
+        query = SQL query
+
+    Returns: ResultRange
++/
+auto dbExecute(in string query) {
+    if(!ymtIsInit("__internal_operation__")) {
+        return ResultRange.init;
+    }
+
+    // open DB if it's the first time
+    if(db == db.init) {
+        db = Database(basedir.buildPath(dbname));
+    }
+
+    // execute query
+    return db.execute(query);
 }
 
 /++ Writes data to file

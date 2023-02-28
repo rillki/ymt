@@ -111,9 +111,6 @@ void parseAdd(string[] args) {
         opt_type = null,
         opt_name = null,
         opt_date = null;
-    uint 
-        opt_typeID = 0, 
-        opt_nameID = 0;
     float 
         opt_receipt = 0;
 
@@ -124,8 +121,6 @@ void parseAdd(string[] args) {
             args,
             "type|t", "add category name", &opt_type,
             "name|n", "add category member", &opt_name,
-            "typeID|x", "category ID", &opt_typeID,
-            "nameID|z", "category member ID", &opt_nameID,
             "receipt|r", "add receipt", &opt_receipt,
             "date|d", "specify date Y-m-d", &opt_date,
         );
@@ -137,22 +132,19 @@ void parseAdd(string[] args) {
     // print ymt usage
     if(argInfo.helpWanted) {
         defaultGetoptPrinter("ymt add version %s -- add your data.".format(YMT_VERSION), argInfo.options);
-        writefln("\nEXAMPLE: ymt add --type=Dairy");
-        writefln("         ymt add --name Milk --typeID 1");
-        writefln("         ymt add --receipt 523.2 --typeID 1 --nameID 1 --date 2022-08-07");
+        writefln("\nEXAMPLE: ymt add --type=Dairy --name=Milk --receipt 523.2 --date 2022-08-07");
         return;
     }
 
-    if(opt_type !is null) {
-        dbAddType(opt_type);
-        writefln("#ymt add: <%s> type added.", opt_type);
-    } else if(opt_name !is null) {
-        dbAddName(opt_name, opt_typeID);
-        writefln("#ymt add: <%s> name attached to typeID(%s).", opt_name, opt_typeID);
-    } else {
-        dbAddReceipt(opt_receipt, opt_nameID, opt_typeID, opt_date);
-        writefln("#ymt add: receipt value %s added with typeID(%s) and nameID(%s).", opt_receipt, opt_typeID, opt_nameID);
+    // check if type is provided (its a mandatory option)
+    if(opt_type is null) {
+        writefln("#ymt add: type wasn't provided! Cancelled.", opt_type);
+        return;
     }
+
+    // add receipt data
+    dbAdd(opt_type, opt_name, opt_receipt, opt_date);
+    writefln("#ymt add: receipt value [%s::%s::%s] added.", opt_type, opt_name, opt_receipt);
 }
 
 /// Parses 'list' command

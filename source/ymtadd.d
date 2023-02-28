@@ -5,6 +5,8 @@ import std.array: empty;
 import std.format: format;
 import std.datetime.date: Date;
 
+void dbAdd() {}
+
 void dbAddType(in string type) {
     // check if basedir and db exist
     if(!ymtIsInit("add")) {

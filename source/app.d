@@ -2,8 +2,8 @@ module app;
 
 import std.stdio: writefln;
 import std.conv: to;
-import std.path: isValidPath;
-import std.file: getcwd, isDir;
+import std.path: isValidPath, buildPath;
+import std.file: getcwd, isDir, exists;
 import std.array: empty;
 import std.string: format, split, toUpper, toLower, startsWith;
 import std.getopt: getopt, GetoptResult, defaultGetoptPrinter;
@@ -46,26 +46,26 @@ void main(string[] args) {
         case "add":
             parseAdd(args);
             break;
-        case "l":
-        case "list":
-            parseList(args);
-            break;
-        case "q":
-        case "query":
-            parseQuery(args);
-            break;
-        case "d":
-        case "describe":
-            parseDescribe(args);
-            break;
-        case "e":
-        case "export":
-            parseExport(args);
-            break;
-        case "p":
-        case "plot":
-            parsePlot(args);
-            break;
+        // case "l":
+        // case "list":
+        //     parseList(args);
+        //     break;
+        // case "q":
+        // case "query":
+        //     parseQuery(args);
+        //     break;
+        // case "d":
+        // case "describe":
+        //     parseDescribe(args);
+        //     break;
+        // case "e":
+        // case "export":
+        //     parseExport(args);
+        //     break;
+        // case "p":
+        // case "plot":
+        //     parsePlot(args);
+        //     break;
         case "c":
         case "clean":
             dbClean();
@@ -147,6 +147,7 @@ void parseAdd(string[] args) {
     writefln("#ymt add: receipt value [%s::%s::%s] added.", opt_type, opt_name, opt_receipt);
 }
 
+/+
 /// Parses 'list' command
 void parseList(string[] args) {
     if(args.length <= 2) {
@@ -379,3 +380,4 @@ void parsePlot(string[] args) {
     dbPlot(opt_grab, opt_typeID, opt_interval[0], opt_path.buildPath("plot.png"));
     writefln("#ymt plot: saved plot to <%s>", opt_path.buildPath("plot.png"));
 }
++/

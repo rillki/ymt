@@ -1,5 +1,5 @@
 module ymtdescribe;
-
+/+
 import ymtcommon;
 import std.array: empty, join;
 import std.format: format;
@@ -87,3 +87,7 @@ void dbDescribe(in int period, in bool detailed, in bool descending) {
     results = db.execute(queryCountPurchases);
     writefln("%14.1,f   OVERALL (%s purchases)", overallSpent, results.oneValue!string);
 }
+
++/
+
+

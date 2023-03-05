@@ -1,5 +1,5 @@
 module ymtplot;
-
+/+
 import std.array: array, empty;
 import std.string: capitalize;
 import std.format: format;
@@ -104,4 +104,4 @@ private auto dbGetData(in int period, in int typeID, in string periodGroupBy) {
     return data;
 }
 
-
++/

@@ -1,6 +1,6 @@
 module ymtcommon;
 
-import d2sqlite3: Database;
+import d2sqlite3: Database, ResultRange;
 import std.stdio: writefln;
 import std.path: expandTilde, buildPath;
 import std.file: readText, exists;
@@ -8,6 +8,11 @@ import std.process: env = environment;
 
 public enum YMT_VERSION = "0.2.4";
 public enum configFile = "ymt.config";
+public enum checkTypeExistsQuery = q{
+    SELECT EXISTS(
+        SELECT 1 FROM Name WHERE Name = "%s"
+    ) as Result
+};
 
 public string basedir;
 public string dbname;
@@ -52,9 +57,9 @@ private Database db;
     Params:
         query = SQL query
 +/
-auto dbRun(in string query) {
+void dbRun(in string query) {
     if(!ymtIsInit("__internal_operation__")) {
-        return ResultRange.init;
+        return;
     }
 
     // open DB if it's the first time
@@ -73,7 +78,7 @@ auto dbRun(in string query) {
 
     Returns: ResultRange
 +/
-auto dbExecute(in string query) {
+ResultRange dbExecute(in string query) {
     if(!ymtIsInit("__internal_operation__")) {
         return ResultRange.init;
     }

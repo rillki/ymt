@@ -1,5 +1,5 @@
 module ymtquery;
-
+/+
 import ymtcommon;
 
 void dbQuery(in string query) {
@@ -38,3 +38,6 @@ void dbQuery(in string query) {
     }
 	writefln("ymt query: done.");
 }
++/
+
+

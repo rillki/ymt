@@ -10,6 +10,11 @@ public enum YMT_VERSION = "0.2.4";
 public enum configFile = "ymt.config";
 public enum checkTypeExistsQuery = q{
     SELECT EXISTS(
+        SELECT 1 FROM Type WHERE Type = "%s"
+    ) as Result
+};
+public enum checkNameExistsQuery = q{
+    SELECT EXISTS(
         SELECT 1 FROM Name WHERE Name = "%s"
     ) as Result
 };

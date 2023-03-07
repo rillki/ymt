@@ -83,11 +83,11 @@ void main(string[] args) {
             writefln("r   remove <dbname>  removes an existing database");
             writefln("s   switch <dbname>  switches to the specified database");
             writefln("a      add [OPTIONS] use -h to read the usage manual on adding data");
-            writefln("l     list [OPTIONS] use -h to read the usage manual on listing data");
-            writefln("q    query [OPTIONS] use -h to read the usage manual on querying data");
-            writefln("d describe [OPTIONS] use -h to read the usage manual on getting summary output");
-            writefln("e   export [OPTIONS] use -h to read the usage manual on exporting data");
-            writefln("p     plot [OPTIONS] use -h to read the usage manual on plotting data");
+            // writefln("l     list [OPTIONS] use -h to read the usage manual on listing data");
+            // writefln("q    query [OPTIONS] use -h to read the usage manual on querying data");
+            // writefln("d describe [OPTIONS] use -h to read the usage manual on getting summary output");
+            // writefln("e   export [OPTIONS] use -h to read the usage manual on exporting data");
+            // writefln("p     plot [OPTIONS] use -h to read the usage manual on plotting data");
             writefln("c    clean           delete all data");
             writefln("v  version           display current version");
             writefln("h     help           this help manual\n");
@@ -136,15 +136,8 @@ void parseAdd(string[] args) {
         return;
     }
 
-    // check if type is provided (its a mandatory option)
-    if(opt_type is null) {
-        writefln("#ymt add: type wasn't provided! Cancelled.", opt_type);
-        return;
-    }
-
     // add receipt data
     dbAdd(opt_type, opt_name, opt_receipt, opt_date);
-    writefln("#ymt add: receipt value [%s::%s::%s] added.", opt_type, opt_name, opt_receipt);
 }
 
 /+

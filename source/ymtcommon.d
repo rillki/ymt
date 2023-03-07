@@ -10,12 +10,12 @@ public enum YMT_VERSION = "0.2.4";
 public enum configFile = "ymt.config";
 public enum checkTypeExistsQuery = q{
     SELECT EXISTS(
-        SELECT 1 FROM Type WHERE Type = "%s"
+        SELECT 1 FROM Receipts WHERE Type = "%s"
     ) as Result
 };
 public enum checkNameExistsQuery = q{
     SELECT EXISTS(
-        SELECT 1 FROM Name WHERE Name = "%s"
+        SELECT 1 FROM Receipts WHERE Name = "%s"
     ) as Result
 };
 
@@ -61,15 +61,14 @@ private Database db;
 
     Params:
         query = SQL query
-+/
-void dbRun(in string query) {
-    if(!ymtIsInit("__internal_operation__")) {
-        return;
-    }
+        db_name = database name
 
+    Note: if `db_name` not provided, uses the global `dbname`
++/
+void dbRun(in string query, in string db_name = null) {
     // open DB if it's the first time
     if(db == db.init) {
-        db = Database(basedir.buildPath(dbname));
+        db = Database(basedir.buildPath(db_name is null ? dbname : db_name));
     }
 
     // execute query
@@ -81,13 +80,9 @@ void dbRun(in string query) {
     Params:
         query = SQL query
 
-    Returns: ResultRange
+    Returns: `ResultRange`
 +/
 ResultRange dbExecute(in string query) {
-    if(!ymtIsInit("__internal_operation__")) {
-        return ResultRange.init;
-    }
-
     // open DB if it's the first time
     if(db == db.init) {
         db = Database(basedir.buildPath(dbname));

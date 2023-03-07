@@ -4,6 +4,7 @@ import std.string: format;
 import std.path: buildPath;
 import std.file: mkdir, remove, rmdirRecurse, exists;
 import std.stdio: File, writefln;
+import std.algorithm: endsWith;
 
 import ymtcommon;
 
@@ -11,6 +12,12 @@ import ymtcommon;
 void dbInit(in string dbname) {
     if(dbname is null) {
         writefln("#ymt init: dbname not provided! See \'ymt -h\' for more info!", dbname);
+        return;
+    }
+
+    // check for invalid DB name
+    if(!dbname.endsWith(".db")) {
+        writefln("#ymt init: invalid dbname provided! Must end with \'.db\'!", dbname);
         return;
     }
 
@@ -25,15 +32,15 @@ void dbInit(in string dbname) {
         return;
     }
 
-    // create RegionPricing table
-    dbRun(`
+    // create Receipts table
+    dbRun(q{
         CREATE TABLE "Receipts" (
-            "Date"		Date NOT NULL,
-            "Type"	    TEXT NOT NULL,
-            "Name"	    TEXT,
-            "Receipt"	REAL NOT NULL
+            "Date"      Date NOT NULL,
+            "Type"      TEXT NOT NULL,
+            "Name"      TEXT,
+            "Receipt"   REAL NOT NULL
         );
-    `);
+    }, dbname);
 
     // save config file to tell which db is used by default
     auto file = File(basedir.buildPath(configFile), "w");
@@ -94,7 +101,7 @@ void dbSwitch(in string dbname) {
     file.close();
 
     // verbose output
-    writefln("#ymt switch: switched to ymt/%s!", dbname);
+    writefln("#ymt switch: switched to %s!", dbname);
 }
 
 /// Delete the entire '.ymt' directory with all db's and configs

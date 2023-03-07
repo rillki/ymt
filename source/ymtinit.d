@@ -64,6 +64,12 @@ void dbRemove(in string dbname) {
         return;
     }
 
+    // check for invalid DB name
+    if(!dbname.endsWith(".db")) {
+        writefln("#ymt remove: invalid dbname provided! Must end with \'.db\'!", dbname);
+        return;
+    }
+
     // remove db
     basedir.buildPath(dbname).remove;
 
@@ -86,6 +92,18 @@ void dbSwitch(in string dbname) {
     // check if basedir exists
     if(!basedir.exists) {
         writefln("#ymt switch: error! Initialize ymt first!");
+        return;
+    }
+
+    // check for invalid DB name
+    if(!dbname.endsWith(".db")) {
+        writefln("#ymt switch: invalid dbname provided! Must end with \'.db\'!", dbname);
+        return;
+    }
+
+    // check if we are at that db already
+    if(basedir.buildPath(.dbname).endsWith(dbname)) {
+        writefln("#ymt switch: already at %s!", dbname);
         return;
     }
 

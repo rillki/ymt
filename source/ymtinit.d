@@ -70,16 +70,20 @@ void dbRemove(in string dbname) {
         return;
     }
 
-    // remove db
-    basedir.buildPath(dbname).remove;
+    try {
+        // remove db
+        basedir.buildPath(dbname).remove;
 
-    // modify the config file
-    auto file = File(basedir.buildPath(configFile), "w");
-    file.write("none");
-    file.close();
+        // modify the config file
+        auto file = File(basedir.buildPath(configFile), "w");
+        file.write("none");
+        file.close();
 
-    // verbose output
-    writefln("#ymt remove: removed %s!", basedir.buildPath(dbname));
+        // verbose output
+        writefln("#ymt remove: removed %s!", basedir.buildPath(dbname));
+    } catch(Exception e) {
+        writefln("#ymt remove: %s", e.msg);
+    }
 }
 
 /// Switch from one db to another (modifies the config file)
@@ -125,12 +129,13 @@ void dbSwitch(in string dbname) {
 /// Delete the entire '.ymt' directory with all db's and configs
 void dbClean() {
     if(basedir.exists) {
-        basedir.rmdirRecurse();
+        try {
+            basedir.rmdirRecurse();
+            writefln("#ymt clean: %s was removed!", basedir);
+        } catch(Exception e) { 
+            writefln("#ymt clean: %s", e.msg);
+        }
     } else {
         writefln("#ymt clean: canceled! %s was not found!", basedir);
-        return;
     }
-
-    // verbose output
-    writefln("#ymt clean: %s was removed!", basedir);
 }

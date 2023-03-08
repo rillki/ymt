@@ -46,10 +46,10 @@ void main(string[] args) {
         case "add":
             parseAdd(args);
             break;
-        // case "l":
-        // case "list":
-        //     parseList(args);
-        //     break;
+        case "l":
+        case "list":
+            parseList(args);
+            break;
         // case "q":
         // case "query":
         //     parseQuery(args);
@@ -83,7 +83,7 @@ void main(string[] args) {
             writefln("r   remove <dbname>  removes an existing database");
             writefln("s   switch <dbname>  switches to the specified database");
             writefln("a      add [OPTIONS] use -h to read the usage manual on adding data");
-            // writefln("l     list [OPTIONS] use -h to read the usage manual on listing data");
+            writefln("l     list [OPTIONS] use -h to read the usage manual on listing data");
             // writefln("q    query [OPTIONS] use -h to read the usage manual on querying data");
             // writefln("d describe [OPTIONS] use -h to read the usage manual on getting summary output");
             // writefln("e   export [OPTIONS] use -h to read the usage manual on exporting data");
@@ -140,7 +140,6 @@ void parseAdd(string[] args) {
     dbAdd(opt_type, opt_name, opt_receipt, opt_date);
 }
 
-/+
 /// Parses 'list' command
 void parseList(string[] args) {
     if(args.length <= 2) {
@@ -156,8 +155,10 @@ void parseList(string[] args) {
         : args[2] == "s" ? "savedir"
         : args[2] == "d" ? "dbdir" 
         : args[2]; 
-    immutable subCommandsList = (command == "types" || command == "t") ? ["-l", "--limit"] :
-        (command == "names" || command == "n") ? ["-x", "--typeID"] : [
+    immutable subCommandsList =
+        ((command == "types" || command == "t") || (command == "names" || command == "n")) 
+        ? ["-l", "--limit"] 
+        : [
             "-t", "--today",
             "-w", "--lastweek",
             "-m", "--lastmonth",
@@ -165,7 +166,7 @@ void parseList(string[] args) {
         ];
     
     // filter subcommand
-    string filtercmd = args.length > 3 ? args[3] : "";
+    string filtercmd = args.length > 3 ? args[3] : "10";
     if(filtercmd.canFind("=") && subCommandsList.canFind(filtercmd.split("=")[0])) {
         filtercmd = filtercmd.split("=")[$-1];
     } else if(subCommandsList.canFind(filtercmd)) {
@@ -182,9 +183,9 @@ void parseList(string[] args) {
             writefln("ymt list version %s -- list database data.", YMT_VERSION);
             writefln("OPTIONS:");
             writefln("t    types list available categories");
-            writefln("           -l --limit list last N rows");
+            writefln("           -l --limit list N rows");
             writefln("n    names list names within those categories");
-            writefln("           -x --typeID filter using type id");
+            writefln("           -l --limit list N rows");
             writefln("r receipts list receipt data");
             writefln("           -t     --today list data added today");
             writefln("           -w  --lastweek list data for past 7 days");
@@ -213,6 +214,8 @@ void parseList(string[] args) {
     }
 }
 
+
+/+
 /// Parses 'query' command
 void parseQuery(string[] args) {
     if(args.length <= 2) {

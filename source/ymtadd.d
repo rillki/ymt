@@ -1,12 +1,13 @@
 module ymtadd;
 
-import ymtcommon;
 import std.stdio: writef, writefln, readln;
 import std.array: empty;
 import std.string: toLower;
 import std.format: format;
 import std.datetime.date: Date;
 import std.datetime.systime: Clock;
+
+import ymtcommon;
 
 void dbAdd(in string type, in string name, in float receipt, in string date) {
     // check if basedir and db exist

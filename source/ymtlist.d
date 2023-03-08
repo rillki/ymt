@@ -68,45 +68,58 @@ void dbList(in string command, in string filtercmd) {
                 type,
             );
         }
-    } // else if(command == "layout") {
-    //     writefln(
-    //         "\n#ymt list: DB layout\n\n%s\n%s\n%s", 
-    //         "Type:\n-------------\n| Type | ID |\n-------------\n", 
-    //         "Name:\n----------------------\n| Name | TypeID | ID |\n----------------------\n", 
-    //         "Receipt:\n------------------------------------\n| Date | TypeID | NameID | Receipt |\n------------------------------------\n"
-    //     );
-    // } else {
-    //     // init query
-    //     query = query.format("Receipt");
-    //     // if filtering is specified
-    //     switch(filtercmd) {
-    //         case "-t":
-    //         case "--today":
-    //             query ~= ` WHERE date=CURRENT_DATE`;
-    //             break;
-    //         case "-w":
-    //         case "--lastweek":
-    //             query ~= ` WHERE date>strftime('%Y-%m-%d', datetime('now','-7 day')) AND date<=CURRENT_DATE`;
-    //             break;
-    //         case "-m":
-    //         case "--lastmonth":
-    //             query ~= ` WHERE date>strftime('%Y-%m-%d', datetime('now','-30 day')) AND date<=CURRENT_DATE`;
-    //             break;
-    //         default:
-    //             break;
-    //     }
+    } else if(command == "layout") {
+        writefln(
+            "#ymt list: DB layout\n%s", 
+            "--------------------------------\n| Date | Type | Name | Receipt |\n--------------------------------"
+        );
+    } else {
+        // construct the query
+        string query = q{
+            SELECT * FROM Receipts 
+        };
 
-    //     // execute query
-    //     auto results = db.execute(query);
+        // if filtering is specified
+        writefln("-----------%s", filtercmd);
+        switch(filtercmd) {
+            case "-t":
+            case "--today":
+                query ~= q{ WHERE date=CURRENT_DATE };
+                break;
+            case "-w":
+            case "--lastweek":
+                query ~= q{ WHERE date>strftime("%Y-%m-%d", datetime("now","-7 day")) AND date<=CURRENT_DATE };
+                break;
+            case "-m":
+            case "--lastmonth":
+                query ~= q{ WHERE date>strftime("%Y-%m-%d", datetime("now","-30 day")) AND date<=CURRENT_DATE };
+                break;
+            default:
+                break;
+        }
+
+        // execute query
+        auto results = dbExecute(query);
         
-    //     // list command
-    //     writefln("%10s   %6s   %6s   %s", "Date", "TypeID", "NameID", "Receipt");
-    //     foreach(row; results) {
-    //         auto date = row["Date"].as!string;
-    //         auto typeID = row["TypeID"].as!string;
-    //         auto nameID = row["NameID"].as!string;
-    //         auto receipt = row["Receipt"].as!double;
-    //         writefln("%10s   %6s   %6s   %.1,f", date, typeID, nameID, receipt);
-    //     }
-    // }
+        // list command
+        enum w = 12; // width identation
+        uint id = 0;
+        writefln("%3s %10s %*s %*s %s", "#", "Date", w, "Type", w, "Name", "Receipt");
+        foreach(row; results) {
+            immutable date = row["Date"].as!string;
+            immutable type = row["Type"].as!string;
+            immutable name = row["Name"].as!string;
+            immutable receipt = row["Receipt"].as!float;
+            writefln(
+                "%3s %10s %*s %*s %.2,f", 
+                id++, 
+                date, 
+                w, type.length > w-3 ? type[0 .. w-3] ~ ".." : type, 
+                w, name.length > w-3 ? name[0 .. w-3] ~ ".." : name, 
+                receipt
+            );
+        }
+    }
 }
+
+

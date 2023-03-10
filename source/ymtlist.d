@@ -70,8 +70,13 @@ void dbList(in string command, in string filtercmd) {
         }
     } else if(command == "layout") {
         writefln(
-            "#ymt list: DB layout\n%s", 
-            "--------------------------------\n| Date | Type | Name | Receipt |\n--------------------------------"
+            "#ymt list: DB layout\n%s%s%s%s%s%s", 
+            "-----------------------------------------\n",
+            "|   Date   |   Type   | Name |  Receipt |\n",
+            "|----------|----------|------|----------|\n",
+            "|   DATE   |   TEXT   | TEXT |   REAL   |\n",
+            "| NOT NULL | NOT NULL |      | NOT NULL |\n",
+            "-----------------------------------------"
         );
     } else {
         // construct the query

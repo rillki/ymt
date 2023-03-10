@@ -50,10 +50,10 @@ void main(string[] args) {
         case "list":
             parseList(args);
             break;
-        // case "q":
-        // case "query":
-        //     parseQuery(args);
-        //     break;
+        case "q":
+        case "query":
+            parseQuery(args);
+            break;
         // case "d":
         // case "describe":
         //     parseDescribe(args);
@@ -84,7 +84,7 @@ void main(string[] args) {
             writefln("s   switch <dbname>  switches to the specified database");
             writefln("a      add [OPTIONS] use -h to read the usage manual on adding data");
             writefln("l     list [OPTIONS] use -h to read the usage manual on listing data");
-            // writefln("q    query [OPTIONS] use -h to read the usage manual on querying data");
+            writefln("q    query [OPTIONS] use -h to read the usage manual on querying data");
             // writefln("d describe [OPTIONS] use -h to read the usage manual on getting summary output");
             // writefln("e   export [OPTIONS] use -h to read the usage manual on exporting data");
             // writefln("p     plot [OPTIONS] use -h to read the usage manual on plotting data");
@@ -215,7 +215,6 @@ void parseList(string[] args) {
 }
 
 
-/+
 /// Parses 'query' command
 void parseQuery(string[] args) {
     if(args.length <= 2) {
@@ -231,13 +230,18 @@ void parseQuery(string[] args) {
     switch(opt_command) {
         case "-h":
         case "--help":
-            writefln("ymt query version %s -- use custom query.", YMT_VERSION);
-            writefln("   -e --execute \"your MySQL query\"");
-            writefln("EXAMPLE: ymt query -e \"INSERT INTO Type (Type) VALUES (\\\"Cake\\\")\"");
+            writefln("ymt query version %s -- execute custom query.", YMT_VERSION);
+            writefln("   -r --run     run your MySQL query");
+            writefln("   -e --execute execute your MySQL query to get results");
+            writefln("EXAMPLE: ymt query -e %s", q{"SELECT * FROM Receipts"});
+            break;
+        case "-r":
+        case "--run":
+            dbQueryRun(opt_query);
             break;
         case "-e":
         case "--execute":
-            dbQuery(opt_query);
+            dbQueryExecute(opt_query);
             break;
         default:
             writefln("#ymt query: Unrecognized option %s!", opt_command);
@@ -245,6 +249,7 @@ void parseQuery(string[] args) {
     }
 }
 
+/+
 void parseDescribe(string[] args) {
     if(args.length <= 2) {
         writefln("#ymt describe: no option is specified! See \'ymt describe -h\' for more info.");

@@ -15,6 +15,9 @@ void dbList(in string command, in string filtercmd) {
         return;
     }
 
+    enum w = 16; // width identation
+    enum wo = 2; // width offset
+
     // retrieve command
     if(command == "types") {
         if(!filtercmd.isNumeric || filtercmd.to!int < 0) {
@@ -55,7 +58,6 @@ void dbList(in string command, in string filtercmd) {
         auto results = dbExecute(query.format(filtercmd));
         
         // list contents
-        enum w = 12; // width identation
         uint id = 0;
         writefln("%3s %*s %s", "#", w, "Name", "Type");
         foreach(row; results) {
@@ -64,7 +66,7 @@ void dbList(in string command, in string filtercmd) {
             writefln(
                 "%3s %*s %s", 
                 id++, 
-                w, name.length > w-3 ? name[0 .. w-3] ~ ".." : name, 
+                w, name.length > w-wo ? name[0 .. w-wo] ~ ".." : name, 
                 type,
             );
         }
@@ -85,7 +87,6 @@ void dbList(in string command, in string filtercmd) {
         };
 
         // if filtering is specified
-        writefln("-----------%s", filtercmd);
         switch(filtercmd) {
             case "-t":
             case "--today":
@@ -107,7 +108,6 @@ void dbList(in string command, in string filtercmd) {
         auto results = dbExecute(query);
         
         // list command
-        enum w = 12; // width identation
         uint id = 0;
         writefln("%3s %10s %*s %*s %s", "#", "Date", w, "Type", w, "Name", "Receipt");
         foreach(row; results) {
@@ -119,8 +119,8 @@ void dbList(in string command, in string filtercmd) {
                 "%3s %10s %*s %*s %.2,f", 
                 id++, 
                 date, 
-                w, type.length > w-3 ? type[0 .. w-3] ~ ".." : type, 
-                w, name.length > w-3 ? name[0 .. w-3] ~ ".." : name, 
+                w, type.length > w-wo ? type[0 .. w-wo] ~ ".." : type, 
+                w, name.length > w-wo ? name[0 .. w-wo] ~ ".." : name, 
                 receipt
             );
         }

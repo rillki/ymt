@@ -1,93 +1,78 @@
 module ymtdescribe;
-/+
-import ymtcommon;
-import std.array: empty, join;
-import std.format: format;
-import std.string: split;
 
-void dbDescribe(in int period, in bool detailed, in bool descending) {
+import ymtcommon;
+import std.conv: to;
+import std.stdio: writefln;
+import std.format: format;
+
+void dbDescribe(in int period, in bool detailed) {
     // check if basedir and db exist
     if(!ymtIsInit("describe")) {
         return;
     }
 
-    // open db
-    auto db = Database(basedir.buildPath(dbname));
+    enum w = 15; // width indentation
 
-    // summary query
-    immutable querySummary = `
-        SELECT t.Type, SUM(r.Receipt) as s FROM Receipt r
-        LEFT OUTER JOIN Type t on t.ID=r.TypeID ` ~ 
-        (period < 0 
-        ? "" 
-        : period == 0 
-        ? `WHERE r.date=CURRENT_DATE ` 
-        : `WHERE r.date>=strftime('%Y-%m-%d', datetime('now','-` 
-        ~ `%s day')) AND r.date<=CURRENT_DATE `.format(period)) 
-        ~ `GROUP BY t.Type ORDER BY s ` ~ (descending ? "DESC" : "ASC");
+    // short summary
+    immutable queryShortSummary = `
+        SELECT "MAX" AS opertaion, Type, MAX(Receipt) as s FROM Receipts
+        WHERE Date>=strftime('%Y-%m-%d', datetime('now','-` ~ period.to!string ~ ` day')) AND Date<=CURRENT_DATE
+        UNION
+        SELECT "MIN" AS opertaion, Type, MIN(Receipt) as s FROM Receipts
+        WHERE Date>=strftime('%Y-%m-%d', datetime('now','-` ~ period.to!string ~ ` day')) AND Date<=CURRENT_DATE
+        UNION
+        SELECT "AVG" AS opertaion, "", AVG(Receipt) as s FROM Receipts
+        WHERE Date>=strftime('%Y-%m-%d', datetime('now','-` ~ period.to!string ~ ` day')) AND Date<=CURRENT_DATE
+    `;
+
+    // count purchases
+    immutable queryCountSumPurchases = `
+        SELECT COUNT(Receipt) as c, SUM(Receipt) as s FROM Receipts 
+        WHERE Date>=strftime('%Y-%m-%d', datetime('now','-` ~ period.to!string ~ ` day')) AND Date<=CURRENT_DATE 
+    `;
+
+    // detailed summary query
+    immutable queryDetailedSummary = `
+        SELECT Type, SUM(Receipt) as s FROM Receipts 
+        WHERE Date>=strftime('%Y-%m-%d', datetime('now','-` ~ period.to!string ~` day')) AND Date<=CURRENT_DATE 
+        GROUP BY Type
+        ORDER BY s ASC
+    `;
     
-    // query max/min/avg receipt value
-    immutable queryDetails = 
-        // MAX receipt value
-        `SELECT Type, MAX(s), "MAX" FROM (%s)`.format(querySummary) ~
-        " UNION " ~
-        // MIN receipt value
-        `SELECT Type, MIN(s), "MIN" FROM (%s)`.format(querySummary) ~
-        " UNION " ~ 
-        // AVG receipt value
-        `SELECT Type, AVG(s), "AVG" FROM (%s)`.format(querySummary);
-    
-    // query count purchases
-    immutable queryCountPurchases = `
-        SELECT COUNT(*) FROM Receipt ` ~
-            (period < 0 
-            ? "" 
-            : period == 0 
-            ? `WHERE date=CURRENT_DATE `
-            : `WHERE date>=strftime('%Y-%m-%d', datetime('now','-` 
-            ~ `%s day')) AND date<=CURRENT_DATE `.format(period));
-
-    // execute query
-    auto results = db.execute(querySummary);
-
-    // output summary
+    // verbose output
     writefln("SUMMARY FOR THE PAST %s DAYS:", period);
-    writefln("%14s   %s", "SUM(Receipt)", "Type");
-    double overallSpent = 0;
-    foreach(row; results) {
-        // get data
-        auto type = row.peek!string(0);
-        auto receipt = row.peek!double(1);
+    writefln("%*s   %s", w, "SUM(Receipt)", "Type");
 
-        // sum
-        overallSpent += receipt;
-
-        // output results
-        writefln("%14.1,f   %s", receipt, (type.empty ? "N/A" : type));
-    }
-
-    // summary
-    writefln("--------------");
-
-    // detailed summary
+    // detailed output
     if(detailed) {
-        results = db.execute(queryDetails);
+        auto results = dbExecute(queryDetailedSummary);
+
         foreach(row; results) {
             // get data
             auto type = row.peek!string(0);
-            auto value = "%.1,f".format(row.peek!double(1));
-            auto operation = row.peek!string(2);
-
-            // display results
-            writefln("%14s   %s (%s)", value, operation, (operation == "AVG" ? "" : type));
+            auto receipt = row.peek!float(1);
+            
+            // output results
+            writefln("%*.2,f   %s", w, receipt, type);
         }
+    }
+    writefln("---------------");
+
+    // summary
+    auto results = dbExecute(queryShortSummary);
+    foreach(row; results) {
+        // get data
+        immutable operation = row.peek!string(0);
+        immutable type = row.peek!string(1);
+        immutable value = "%.2,f".format(row.peek!double(2));
+
+        // display results
+        writefln("%*s   %s (%s)", w, value, operation, type);
     }
 
     // output overall spent
-    results = db.execute(queryCountPurchases);
-    writefln("%14.1,f   OVERALL (%s purchases)", overallSpent, results.oneValue!string);
+    results = dbExecute(queryCountSumPurchases);
+    writefln("%*.2,f   OVERALL (%s purchases)", w, results.front.peek!float(1), results.front.peek!int(0));
 }
-
-+/
 
 

@@ -54,10 +54,10 @@ void main(string[] args) {
         case "query":
             parseQuery(args);
             break;
-        // case "d":
-        // case "describe":
-        //     parseDescribe(args);
-        //     break;
+        case "d":
+        case "describe":
+            parseDescribe(args);
+            break;
         // case "e":
         // case "export":
         //     parseExport(args);
@@ -85,7 +85,7 @@ void main(string[] args) {
             writefln("a      add [OPTIONS] use -h to read the usage manual on adding data");
             writefln("l     list [OPTIONS] use -h to read the usage manual on listing data");
             writefln("q    query [OPTIONS] use -h to read the usage manual on querying data");
-            // writefln("d describe [OPTIONS] use -h to read the usage manual on getting summary output");
+            writefln("d describe [OPTIONS] use -h to read the usage manual on getting summary output");
             // writefln("e   export [OPTIONS] use -h to read the usage manual on exporting data");
             // writefln("p     plot [OPTIONS] use -h to read the usage manual on plotting data");
             writefln("c    clean           delete all data");
@@ -244,7 +244,6 @@ void parseQuery(string[] args) {
     }
 }
 
-/+
 void parseDescribe(string[] args) {
     if(args.length <= 2) {
         writefln("#ymt describe: no option is specified! See \'ymt describe -h\' for more info.");
@@ -255,8 +254,7 @@ void parseDescribe(string[] args) {
     int 
         opt_period = 7;
     bool 
-        opt_detailed = false,
-        opt_descending = false;
+        opt_detailed = false;
 
     // parsing command line arguments
     args = args.remove(1);
@@ -266,7 +264,6 @@ void parseDescribe(string[] args) {
             args,
             "period|p", "time period in days", &opt_period,
             "detailed|d", "detailed report (default: false)", &opt_detailed,
-            "desc", "descending order (default: false)", &opt_descending,
         );
     } catch(Exception e) {
         writefln("#ymt describe: error! %s", e.msg);
@@ -276,14 +273,15 @@ void parseDescribe(string[] args) {
     // print ymt usage
     if(argInfo.helpWanted) {
         defaultGetoptPrinter("ymt describe version %s -- describe data.".format(YMT_VERSION), argInfo.options);
-        writefln("\nEXAMPLE: ymt describe --period=30 --detailed --desc");
+        writefln("\nEXAMPLE: ymt describe --period=30 --detailed");
         return;
     }
 
     // describe data
-    dbDescribe(opt_period, opt_detailed, opt_descending);
+    dbDescribe(opt_period, opt_detailed);
 }
 
+/+
 void parseExport(string[] args) {
     // commands
     string opt_path = basedir;

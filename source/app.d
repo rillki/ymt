@@ -231,17 +231,12 @@ void parseQuery(string[] args) {
         case "-h":
         case "--help":
             writefln("ymt query version %s -- execute custom query.", YMT_VERSION);
-            writefln("   -r --run     run your MySQL query");
             writefln("   -e --execute execute your MySQL query to get results");
             writefln("EXAMPLE: ymt query -e %s", q{"SELECT * FROM Receipts"});
             break;
-        case "-r":
-        case "--run":
-            dbQueryRun(opt_query);
-            break;
         case "-e":
         case "--execute":
-            dbQueryExecute(opt_query);
+            dbQuery(opt_query);
             break;
         default:
             writefln("#ymt query: Unrecognized option %s!", opt_command);

@@ -5,7 +5,7 @@ import std.array: empty;
 
 import ymtcommon;
 
-void dbQueryExecute(in string query) {
+void dbQuery(in string query) {
     // check if basedir and db exist
     if(!ymtIsInit("query")) {
         return;
@@ -26,28 +26,6 @@ void dbQueryExecute(in string query) {
             writefln("%s", row);
         }
         
-        writefln("ymt query: done.");
-    } catch(Exception e) {
-        writefln("#ymt query: %s", e.msg);
-    }
-}
-
-void dbQueryRun(in string query) {
-    // check if basedir and db exist
-    if(!ymtIsInit("query")) {
-        return;
-    }
-
-    // check if got valid query
-    if(query.empty) {
-        writefln("#ymt query: no query provided!");
-        return;
-    }
-    
-    // execute query
-    try {
-        writefln("#ymt query: running \"%s\"", query);
-        dbRun(query);
         writefln("ymt query: done.");
     } catch(Exception e) {
         writefln("#ymt query: %s", e.msg);

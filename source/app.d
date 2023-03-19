@@ -58,10 +58,10 @@ void main(string[] args) {
         case "describe":
             parseDescribe(args);
             break;
-        // case "e":
-        // case "export":
-        //     parseExport(args);
-        //     break;
+        case "e":
+        case "export":
+            parseExport(args);
+            break;
         // case "p":
         // case "plot":
         //     parsePlot(args);
@@ -86,7 +86,7 @@ void main(string[] args) {
             writefln("l     list [OPTIONS] use -h to read the usage manual on listing data");
             writefln("q    query [OPTIONS] use -h to read the usage manual on querying data");
             writefln("d describe [OPTIONS] use -h to read the usage manual on getting summary output");
-            // writefln("e   export [OPTIONS] use -h to read the usage manual on exporting data");
+            writefln("e   export [OPTIONS] use -h to read the usage manual on exporting data");
             // writefln("p     plot [OPTIONS] use -h to read the usage manual on plotting data");
             writefln("c    clean           delete all data");
             writefln("v  version           display current version");
@@ -281,7 +281,6 @@ void parseDescribe(string[] args) {
     dbDescribe(opt_period, opt_detailed);
 }
 
-/+
 void parseExport(string[] args) {
     // commands
     string opt_path = basedir;
@@ -319,6 +318,7 @@ void parseExport(string[] args) {
     writefln("#ymt export: data saved to <%s>", opt_path.buildPath("dbData.csv"));
 }
 
+/+
 void parsePlot(string[] args) {
     if(args.length <= 2) {
         writefln("#ymt plot: no option is specified! See \'ymt plot -h\' for more info.");

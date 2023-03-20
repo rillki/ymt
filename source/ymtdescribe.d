@@ -46,7 +46,6 @@ void dbDescribe(in int period, in bool detailed) {
     // detailed output
     if(detailed) {
         auto results = dbExecute(queryDetailedSummary);
-
         foreach(row; results) {
             // get data
             auto type = row.peek!string(0);

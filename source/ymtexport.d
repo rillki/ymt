@@ -11,6 +11,7 @@ import ymtcommon;
 +/
 void dbExportCSV(in string path, in char sep = ';') {
     import std.array: join;
+    import std.stdio: writefln;
 
     // check if basedir and db exist
     if(!ymtIsInit("export")) {
@@ -28,6 +29,7 @@ void dbExportCSV(in string path, in char sep = ';') {
 
     // write data to file
     path.fileWrite(data);
+    writefln("#ymt export: data saved to <%s>", path);
 }
 
 

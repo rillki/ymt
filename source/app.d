@@ -62,10 +62,10 @@ void main(string[] args) {
         case "export":
             parseExport(args);
             break;
-        // case "p":
-        // case "plot":
-        //     parsePlot(args);
-        //     break;
+        case "p":
+        case "plot":
+            parsePlot(args);
+            break;
         case "c":
         case "clean":
             dbClean();
@@ -87,7 +87,7 @@ void main(string[] args) {
             writefln("q    query [OPTIONS] use -h to read the usage manual on querying data");
             writefln("d describe [OPTIONS] use -h to read the usage manual on getting summary output");
             writefln("e   export [OPTIONS] use -h to read the usage manual on exporting data");
-            // writefln("p     plot [OPTIONS] use -h to read the usage manual on plotting data");
+            writefln("p     plot [OPTIONS] use -h to read the usage manual on plotting data");
             writefln("c    clean           delete all data");
             writefln("v  version           display current version");
             writefln("h     help           this help manual\n");
@@ -214,7 +214,6 @@ void parseList(string[] args) {
     }
 }
 
-
 /// Parses 'query' command
 void parseQuery(string[] args) {
     if(args.length <= 2) {
@@ -244,6 +243,7 @@ void parseQuery(string[] args) {
     }
 }
 
+/// Parses 'describe' command
 void parseDescribe(string[] args) {
     if(args.length <= 2) {
         writefln("#ymt describe: no option is specified! See \'ymt describe -h\' for more info.");
@@ -251,7 +251,7 @@ void parseDescribe(string[] args) {
     }
 
     // commands
-    int 
+    uint 
         opt_period = 7;
     bool 
         opt_detailed = false;
@@ -281,6 +281,7 @@ void parseDescribe(string[] args) {
     dbDescribe(opt_period, opt_detailed);
 }
 
+/// Parses 'export' command
 void parseExport(string[] args) {
     // commands
     string opt_path = basedir;
@@ -315,10 +316,9 @@ void parseExport(string[] args) {
 
     // export data
     dbExportCSV(opt_path.buildPath("dbData.csv"), opt_separator);
-    writefln("#ymt export: data saved to <%s>", opt_path.buildPath("dbData.csv"));
 }
 
-/+
+/// Parses 'plot' command
 void parsePlot(string[] args) {
     if(args.length <= 2) {
         writefln("#ymt plot: no option is specified! See \'ymt plot -h\' for more info.");
@@ -326,11 +326,9 @@ void parsePlot(string[] args) {
     }
 
     // commands
-    int 
-        opt_grab = -1,
-        opt_typeID = -1;
     string 
-        opt_interval = "monthly",
+        opt_type = null,
+        opt_group = "monthly",
         opt_path = basedir;
 
     // parsing command line arguments
@@ -339,9 +337,8 @@ void parsePlot(string[] args) {
     try {
             argInfo = getopt(
                 args,
-                "grab|g", "grab time period in days (default: all)", &opt_grab,
-                "typeID|x", "filter using type id", &opt_typeID,
-                "interval|i", "group data [ daily, monthly, yearly ] (default: monthly)", &opt_interval,
+                "type|t", "filter using type (default: all)", &opt_type,
+                "group|g", "group data [ daily, monthly, yearly ] (default: monthly)", &opt_group,
                 "path|p", "save path (default: <ymt savedir>/plot.png)", &opt_path,
             );
 
@@ -353,14 +350,14 @@ void parsePlot(string[] args) {
     // print ymt usage
     if(argInfo.helpWanted) {
         defaultGetoptPrinter("ymt plot version %s -- plot data.".format(YMT_VERSION), argInfo.options);
-        writefln("\nEXAMPLE: ymt plot --grab=30 --typeID=id --interval=monthly --path ../pics");
+        writefln("\nEXAMPLE: ymt plot --type=Milk --group=monthly --path ../pics");
         return;
     }
 
     // check if the specified interval is valid
-    opt_interval = opt_interval.toLower();
-    if(!opt_interval.startsWith("d", "m", "y")) {
-        writefln("#ymt plot: interval specified <%s> isn't supported!", opt_interval);
+    opt_group = opt_group.toLower();
+    if(!opt_group.startsWith("d", "m", "y")) {
+        writefln("#ymt plot: group by interval specified <%s> isn't supported!", opt_group);
         return;
     }
 
@@ -371,7 +368,7 @@ void parsePlot(string[] args) {
     }
 
     // plot data
-    dbPlot(opt_grab, opt_typeID, opt_interval[0], opt_path.buildPath("plot.png"));
-    writefln("#ymt plot: saved plot to <%s>", opt_path.buildPath("plot.png"));
+    dbPlot(opt_type, opt_group[0], opt_path.buildPath("plot.png"));
 }
-+/
+
+

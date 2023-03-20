@@ -1,5 +1,6 @@
 module ymtplot;
-/+
+
+import std.stdio: writefln;
 import std.array: array, empty;
 import std.string: capitalize;
 import std.format: format;
@@ -18,90 +19,59 @@ import ymtcommon;
         typeID = category ID
         periodGroupBy = dayily, monthly, yearly
         path = save path with plot name
-
-
 +/
-void dbPlot(in int period, in int typeID, in char periodGroupBy, in string path) {
+void dbPlot(in string type, in char periodGroupBy, in string path) {
     // check if basedir and db exist
     if(!ymtIsInit("plot")) {
         return;
     }
 
+    if(!type.empty) {
+        // check if type specified exists in DB (providing type is mandatory)
+        auto result = dbExecute(checkTypeExistsQuery.format(type));
+        if(!result.front["Result"].as!bool) {
+            writefln("#ymt plot: <%s> does not exist in the Database!", type);
+            writefln("#ymt plot: Cancelled!", type);
+            return;
+        }
+    }
+
+    // create query
+    immutable dateFmt = periodGroupBy == 'd' ? `strftime('%Y-%m-%d', Date) as Date`
+        : periodGroupBy == 'm' ? `strftime('%Y-%m', Date) as Date`
+        : `strftime('%Y', Date) as Date`;
+    immutable query = type.empty ? `SELECT %s, SUM(Receipt) FROM Receipts GROUP BY Date`.format(dateFmt) : `
+        SELECT %s, s FROM (
+            SELECT Date, Type, SUM(Receipt) as s FROM Receipts
+            WHERE Type="%s"
+            GROUP BY Date
+        )
+    `.format(dateFmt, type);
+
+    // create data structure
+    struct dbData { string[] dates; double[] receipts; } 
+    dbData data;
+
     // get data
-    auto data = dbGetData(
-        period, 
-        typeID,
-        periodGroupBy == 'y' ? "strftime('%Y', r.date)"
-            : periodGroupBy == 'm' ? "strftime('%Y-%m', r.date)"
-            : "strftime('%Y-%m-%d', r.date)"
-    );
+    auto results = dbExecute(query);
+    foreach(row; results) {
+        // get data
+        data.dates ~= row.peek!string(0);
+        data.receipts ~= row.peek!float(1);
+    }
 
     // plotting
     import std.range: zip;
     import std.algorithm: map, maxElement;
-    zip(data.dates, data.receiptValues)
+    zip(data.dates, data.receipts)
         .map!(a => aes!("x", "y")(a[0], a[1]))
         .geomLine
         .putIn(GGPlotD())
-        .put(yaxisRange(0, data.receiptValues.maxElement))
+        .put(yaxisRange(0, data.receipts.maxElement))
         .put(xaxisTextAngle(30))
         .save(path);
-}
-
-/++ Returns Dates and Receipt values
-
-    Params:
-        period = time period in days
-        typeID = category ID
-        periodGroupBy = dayily, monthly, yearly
     
-    Returns: dbData { string[] dates; double[] receiptValues }
-+/
-private auto dbGetData(in int period, in int typeID, in string periodGroupBy) {
-    struct dbData { string[] dates; double[] receiptValues; }
-
-    // open db
-    auto db = Database(basedir.buildPath(dbname));
-
-    // prepare a query
-    immutable query = 
-            `SELECT %s as rdate, SUM(r.Receipt) as s FROM Receipt r 
-                %s 
-                %s 
-             GROUP BY rdate ORDER BY rdate ASC
-            `.format(
-                periodGroupBy,
-                (
-                    period < 0 
-                        ? "" 
-                        : period == 0 
-                            ? `WHERE r.date=CURRENT_DATE ` 
-                            : `WHERE r.date>=strftime('%Y-%m-%d', datetime('now','-%s day')) AND r.date<=CURRENT_DATE `
-                            .format(period)
-                ), 
-                (
-                    typeID < 0 
-                        ? "" 
-                        : `WHERE r.TypeID=%s `
-                        .format(typeID)
-                )
-            );
-
-    // retreive all types
-    dbData data;
-    auto results = db.execute(query);
-    foreach(row; results) {
-        immutable tmp = row.peek!string(0);
-        if(typeID > -1 && tmp.empty) {
-            continue;
-        }
-
-        // save data
-        data.dates ~= tmp.empty ? "N/A" : tmp;
-        data.receiptValues ~= row.peek!double(1);
-    }
-
-    return data;
+    writefln("#ymt plot: saved plot to <%s>", path);
 }
 
-+/
+

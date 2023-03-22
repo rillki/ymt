@@ -24,18 +24,27 @@ EXAMPLE: ymt init crow.db
 ```
 
 ## Dependencies
-#### Linux and MacOS
-You need `sqlite3` library. It comes preinstalled on macOS. But on Linux you need to install the `libsqlite3-dev` package. 
+You need to install `sqlite3` and `cairo` libraries. 
+
+#### Linux
+```
+sudo apt install libsqlite3-dev
+sudo apt install libcairo2-dev
+```
+
+#### MacOS
+`sqlite3` comes preinstalled on macOS. You only need to install `cairo` using brew package manager:
+```
+brew install cairo
+```
 
 #### Windows
-On Windows you need both `sqlite3` and `cairo` libraries. Both come with the `ymt` binary. You don't need to install anything.
+Both `sqlite3` and `cairo` libraries come with the `ymt` binary. You don't need to install anything. Find the `ddl` libraries in the `libs` folder and put them into the same folder as your `ymt` binary.
 
 ## Build
 ```
 dub build
 ```
-
-Your will find the binary in the `bin/` folder. On Windows you need both the `ymt` binary and the `dll` libraries listed in `libs` folder. Put them along side each other.
 
 ## LICENSE
 All code is licensed under the MIT license.

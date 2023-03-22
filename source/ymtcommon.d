@@ -6,7 +6,7 @@ import std.path: expandTilde, buildPath;
 import std.file: readText, exists;
 import std.process: env = environment;
 
-public enum YMT_VERSION = "0.2.4";
+public enum YMT_VERSION = "0.2.5";
 public enum configFile = "ymt.config";
 public enum checkTypeExistsQuery = q{
     SELECT EXISTS(

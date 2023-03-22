@@ -3,12 +3,12 @@ module app;
 import std.stdio: writefln;
 import std.conv: to;
 import std.path: isValidPath, buildPath;
-import std.file: getcwd, isDir, exists;
+import std.file: getcwd, isDir, isFile, exists;
 import std.array: empty;
 import std.string: format, split, toUpper, toLower, startsWith;
 import std.getopt: getopt, GetoptResult, defaultGetoptPrinter;
 import std.algorithm.mutation: remove;
-import std.algorithm.searching: canFind;
+import std.algorithm.searching: canFind, endsWith;
 
 import ymtcommon;
 import ymtinit;
@@ -17,6 +17,7 @@ import ymtlist;
 import ymtquery;
 import ymtdescribe;
 import ymtplot;
+import ymtimport;
 import ymtexport;
 
 void main(string[] args) {
@@ -62,6 +63,10 @@ void main(string[] args) {
         case "export":
             parseExport(args);
             break;
+        case "m":
+        case "import":
+            parseImport(args);
+            break;
         case "p":
         case "plot":
             parsePlot(args);
@@ -79,18 +84,19 @@ void main(string[] args) {
         case "h":
         case "help":
             writefln("ymt version %s - Your Money Tracker.", YMT_VERSION);
-            writefln("i     init <dbname>  initializes a new database");
-            writefln("r   remove <dbname>  removes an existing database");
-            writefln("s   switch <dbname>  switches to the specified database");
+            writefln("i     init  <dbname> initializes a new database");
+            writefln("r   remove  <dbname> removes an existing database");
+            writefln("s   switch  <dbname> switches to the specified database");
             writefln("a      add [OPTIONS] use -h to read the usage manual on adding data");
             writefln("l     list [OPTIONS] use -h to read the usage manual on listing data");
             writefln("q    query [OPTIONS] use -h to read the usage manual on querying data");
             writefln("d describe [OPTIONS] use -h to read the usage manual on getting summary output");
-            writefln("e   export [OPTIONS] use -h to read the usage manual on exporting data");
             writefln("p     plot [OPTIONS] use -h to read the usage manual on plotting data");
-            writefln("c    clean           delete all data");
-            writefln("v  version           display current version");
-            writefln("h     help           this help manual\n");
+            writefln("e   export [OPTIONS] use -h to read the usage manual on exporting data");
+            writefln("m   import [OPTIONS] use -h to read the usage manual on importing data");
+            writefln("c    clean            delete all data");
+            writefln("v  version            display current version");
+            writefln("h     help            this help manual\n");
             writefln("EXAMPLE: ymt init crow.db");
             break;
         default:
@@ -303,12 +309,12 @@ void parseExport(string[] args) {
 
     // print ymt usage
     if(argInfo.helpWanted) {
-        defaultGetoptPrinter("ymt export version %s -- add your data.".format(YMT_VERSION), argInfo.options);
-        writefln("\nEXAMPLE: ymt export path=../Desktop");
+        defaultGetoptPrinter("ymt export version %s -- export data to a CSV file.".format(YMT_VERSION), argInfo.options);
+        writefln("\nEXAMPLE: ymt export --path=../Desktop");
         return;
     }
 
-    // check if savepath exists
+    // check if path exists
     if(!opt_path.isValidPath || !(opt_path.exists && opt_path.isDir)) {
         writefln("#ymt export: directory <%s> does not exist!", opt_path);
         return;
@@ -316,6 +322,51 @@ void parseExport(string[] args) {
 
     // export data
     dbExportCSV(opt_path.buildPath("dbData.csv"), opt_separator);
+}
+
+/// Parses 'import' command
+void parseImport(string[] args) {
+    // commands
+    string opt_path = null;
+    char opt_separator = ';';
+    bool opt_has_header = true;
+
+    // parsing command line arguments
+    args = args.remove(1);
+    GetoptResult argInfo;
+    try {
+        argInfo = getopt(
+            args,
+            "path|p", "path to CSV file (must have the same layout as DB!)", &opt_path,
+            "separator|s", "specify data separator (default: \';\')", &opt_separator,
+            "header|e", "contains header (default: true)", &opt_has_header,
+        );
+    } catch(Exception e) {
+        writefln("#ymt import: error! %s", e.msg);
+        return;
+    }
+
+    // print ymt usage
+    if(argInfo.helpWanted) {
+        defaultGetoptPrinter("ymt import version %s -- import data from a CSV file.".format(YMT_VERSION), argInfo.options);
+        writefln("\nEXAMPLE: ymt import --path=../Desktop/data.csv");
+        return;
+    }
+
+    // check if path exists
+    if(!opt_path.isValidPath || !(opt_path.exists && opt_path.isFile)) {
+        writefln("#ymt import: directory <%s> does not exist!", opt_path);
+        return;
+    }
+
+    // check if it ends with *.csv
+    if(!opt_path.endsWith(".csv")) {
+        writefln("#ymt import: file <%s> must end with '.csv'!", opt_path);
+        return;
+    }
+
+    // export data
+    dbImportCSV(opt_path, opt_separator, opt_has_header);
 }
 
 /// Parses 'plot' command

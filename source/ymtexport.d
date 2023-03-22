@@ -7,7 +7,6 @@ import ymtcommon;
     Params:
         path = save path with filename
         sep = char separator
-
 +/
 void dbExportCSV(in string path, in char sep = ';') {
     import std.array: join;

@@ -36,7 +36,12 @@ void dbImportCSV(in string path, in char sep = ';', in bool header = true) {
     // add data
     uint counter = 0;
     foreach(line; data) {
-        immutable entry = tuple(line[0], line[1], line[2], line[3]);
+        immutable entry = tuple(
+            line[0], 
+            line[1], 
+            line[3] == "NA" ? line[3] : line[2], 
+            line[3] == "NA" ? line[2] : line[3]
+        );
 
         try {
             dbRun(query.format(entry.expand));

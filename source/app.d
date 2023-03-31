@@ -94,9 +94,9 @@ void main(string[] args) {
             writefln("p     plot [OPTIONS] use -h to read the usage manual on plotting data");
             writefln("e   export [OPTIONS] use -h to read the usage manual on exporting data");
             writefln("m   import [OPTIONS] use -h to read the usage manual on importing data");
-            writefln("c    clean            delete all data");
-            writefln("v  version            display current version");
-            writefln("h     help            this help manual\n");
+            writefln("c    clean           delete all data");
+            writefln("v  version           display current version");
+            writefln("h     help           this help manual\n");
             writefln("EXAMPLE: ymt init crow.db");
             break;
         default:

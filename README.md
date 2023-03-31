@@ -16,9 +16,9 @@ d describe [OPTIONS] use -h to read the usage manual on getting summary output
 p     plot [OPTIONS] use -h to read the usage manual on plotting data
 e   export [OPTIONS] use -h to read the usage manual on exporting data
 m   import [OPTIONS] use -h to read the usage manual on importing data
-c    clean            delete all data
-v  version            display current version
-h     help            this help manual
+c    clean           delete all data
+v  version           display current version
+h     help           this help manual
 
 EXAMPLE: ymt init crow.db
 ```

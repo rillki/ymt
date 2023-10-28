@@ -5,6 +5,7 @@ import std.stdio: writefln;
 import std.path: expandTilde, buildPath;
 import std.file: readText, exists;
 import std.process: env = environment;
+import std.string: strip;
 
 public enum YMT_VERSION = "0.2.5";
 public enum configFile = "ymt.config";
@@ -29,7 +30,7 @@ static this() {
         basedir = env.get("HOME", "~".expandTilde).buildPath(".ymt");
     }
 
-    dbname = basedir.exists ? basedir.buildPath(configFile).readText : "";
+    dbname = basedir.exists ? basedir.buildPath(configFile).readText.strip : "";
 }
 
 /++ Check if YMT was initialized

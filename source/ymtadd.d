@@ -68,7 +68,7 @@ void dbAdd(in string type, in string name, in float receipt, in string date) {
         
         writefln(
             "#ymt add: receipt value [ %s | %s | %s | %s ] added.", 
-            (date.empty ? Clock.currTime.toISOExtString()[0 .. 10] : "\"" ~ date ~ "\""), 
+            (date.empty ? Clock.currTime.toISOExtString()[0 .. 10] : date), 
             type,
             name.empty ? "-" : name, 
             receipt

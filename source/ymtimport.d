@@ -82,7 +82,7 @@ T[][] csvRead(T = string)(in string filename, in char sep = ';', bool header = t
     }
 
     // reading data from the file
-    size_t previousEntriesLen = 0;
+    size_t previousEntriesLen = 4;
     T[][] data; data.reserve(preallocate);
     foreach(record; file.byLine.map!(row => row.replace("\"", "").split(sep))) {
         record = record.array.remove!(row => row.empty);
@@ -91,11 +91,6 @@ T[][] csvRead(T = string)(in string filename, in char sep = ';', bool header = t
         if(header) {
             header = false;
             continue;
-        }
-
-        // save number of entries in the first row
-        if(previousEntriesLen == 0) {
-            previousEntriesLen = record.length;
         }
 
         // if CSV file is damaged, try to fix it
